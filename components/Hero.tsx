@@ -5,6 +5,7 @@ import {
 } from 'framer-motion';
 import { Scan } from 'lucide-react';
 import { contact, copy, tr, type Lang } from '../lib/i18n';
+import HeroScene from './HeroScene';
 
 type Mode = 'thermal' | 'night';
 const MAG = 1.22;
@@ -31,6 +32,7 @@ export default function Hero({ lang }: { lang: Lang }) {
   const [mode, setMode] = useState<Mode>('thermal');
   const [locked, setLocked] = useState<string[]>([]);
   const [coarse, setCoarse] = useState(false);
+  const [live, setLive] = useState<boolean | null>(null);
 
   const fx = useMotionValue<number>(tour[0][0]);
   const fy = useMotionValue<number>(tour[0][1]);
@@ -131,25 +133,32 @@ export default function Hero({ lang }: { lang: Lang }) {
       <motion.div className={`absolute inset-0 ${reduce ? '' : 'breathe'}`} style={{ x: px, y: py, WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent)', maskImage: 'linear-gradient(to bottom, #000 72%, transparent)' }}>
       <div ref={frameRef} className="hero-frame">
         {/* the city, pulling into focus on load */}
-        <motion.img
-          src="img/hero-city.jpg"
-          alt=""
-          className="absolute inset-0 h-full w-full select-none"
-          draggable={false}
-          initial={reduce ? false : { filter: 'blur(18px) brightness(0.3)', scale: 1.08 }}
-          animate={{ filter: 'blur(0px) brightness(0.7)', scale: 1, opacity: 0.86 }}
+        <motion.div
+          className="absolute inset-0"
+          initial={reduce ? false : { filter: 'blur(18px) brightness(0.4)', scale: 1.08 }}
+          animate={{ filter: 'blur(0px) brightness(1)', scale: 1 }}
           transition={{ duration: 1.6, ease }}
-        />
+        >
+          {/* still photo until the live scene is ready, and the fallback if WebGL is missing */}
+          {live !== true && (
+            <img src="img/hero-city.jpg" alt="" className="absolute inset-0 h-full w-full select-none" style={{ filter: 'brightness(0.72)' }} draggable={false} />
+          )}
+          {live !== false && (
+            <HeroScene sx={sx} sy={sy} r={r} mag={MAG} mode={mode} reduce={!!reduce} onReady={setLive} className={live ? 'opacity-100' : 'opacity-0'} />
+          )}
+        </motion.div>
 
         {/* what the system sees: recolored, magnified, clipped to the lens */}
         <motion.div className="absolute inset-0" style={{ clipPath: clip, transformOrigin: origin, scale: MAG }} aria-hidden>
-          <img
-            src="img/hero-city.jpg"
-            alt=""
-            className="absolute inset-0 h-full w-full"
-            style={{ filter: `url(#${mode})` }}
-            draggable={false}
-          />
+          {!live && (
+            <img
+              src="img/hero-city.jpg"
+              alt=""
+              className="absolute inset-0 h-full w-full"
+              style={{ filter: `url(#${mode})` }}
+              draggable={false}
+            />
+          )}
           {targets.map((t) => {
             const on = locked.includes(t.id);
             const d = copy.detect[t.id];
