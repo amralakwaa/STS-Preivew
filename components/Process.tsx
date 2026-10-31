@@ -10,7 +10,7 @@ export default function Process({ lang }: { lang: Lang }) {
   const fill = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
 
   return (
-    <section id="process" className="scroll-mt-24 px-5 py-24 sm:px-10 sm:py-36">
+    <section id="process" className="scroll-mt-24 px-5 py-20 sm:px-10 sm:py-28">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div className="lg:sticky lg:top-32 lg:self-start">
           <FocusText text={tr(copy.process.title, lang)} className="display max-w-[16ch] text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />

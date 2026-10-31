@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { services } from '../lib/data';
@@ -8,69 +8,99 @@ import FocusText from './FocusText';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-/** A control room: pick a system on one side, its monitor lights up on the other. */
+/** Show a system on the monitor from anywhere on the page (the footer links use this). */
+export const pickSystem = (slug: string) => window.dispatchEvent(new CustomEvent('sts:show', { detail: slug }));
+/** Jump to the quote form with this system already ticked. */
+export const quoteSystem = (slug: string) => {
+  window.dispatchEvent(new CustomEvent('sts:quote', { detail: slug }));
+  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+};
+
+const bySlug = Object.fromEntries(services.map((s) => [s.slug, s]));
+
+/** A control room: systems grouped on one side, the chosen one lit up on the monitor. */
 export default function Systems({ lang }: { lang: Lang }) {
-  const [active, setActive] = useState(0);
+  const [slug, setSlug] = useState(services[0].slug);
   const reduce = useReducedMotion();
-  const s = services[active];
+  const s = bySlug[slug];
+
+  useEffect(() => {
+    const on = (e: Event) => setSlug((e as CustomEvent<string>).detail);
+    window.addEventListener('sts:show', on);
+    return () => window.removeEventListener('sts:show', on);
+  }, []);
+
+  const hoverPick = (next: string) => window.matchMedia('(hover: hover)').matches && setSlug(next);
 
   return (
-    <section id="services" className="relative scroll-mt-24 px-5 py-24 sm:px-10 sm:py-36">
+    <section id="services" className="relative scroll-mt-24 px-5 py-20 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-7xl">
         <FocusText text={tr(copy.services.title, lang)} className="display max-w-[20ch] text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
         <p className="mt-4 text-lg text-mist">{tr(copy.services.sub, lang)}</p>
 
-        <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
-          {/* system list */}
-          <div role="tablist" aria-orientation="vertical" className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 lg:mx-0 lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0">
-            {services.map((item, i) => {
-              const on = i === active;
-              return (
-                <button
-                  key={item.slug}
-                  role="tab"
-                  id={`tab-${item.slug}`}
-                  aria-selected={on}
-                  aria-controls="system-monitor"
-                  onClick={() => setActive(i)}
-                  onMouseEnter={() => window.matchMedia('(hover: hover)').matches && setActive(i)}
-                  className={`relative shrink-0 rounded-full border px-4 py-2 text-start text-[15px] transition-colors lg:rounded-none lg:border-0 lg:border-b lg:border-white/10 lg:px-0 lg:py-4 lg:ps-6 lg:text-[1.35rem] ${
-                    on ? 'border-paper bg-paper text-ink lg:bg-transparent lg:text-paper' : 'border-white/15 text-mist hover:text-paper'
-                  }`}
-                >
-                  {on && (
-                    <motion.span
-                      layoutId="sys-glass"
-                      className="absolute inset-y-1 -start-2 end-0 hidden rounded-2xl bg-gradient-to-l from-white/[0.12] to-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.1)] lg:block rtl:bg-gradient-to-r"
-                      transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-                    >
-                      <span className="absolute inset-y-3 start-0 w-[3px] rounded-full bg-amber shadow-[0_0_14px_2px_rgba(255,178,62,0.7)]" />
-                    </motion.span>
-                  )}
-                  <span className="relative transition-transform duration-500 lg:display lg:inline-block lg:group-hover:translate-x-0" style={on ? { translate: lang === 'ar' ? '-6px 0' : '6px 0' } : undefined}>{tr(item.title, lang)}</span>
-                </button>
-              );
-            })}
+        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+          {/* systems, grouped */}
+          <div role="tablist" aria-orientation="vertical" className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 lg:mx-0 lg:flex-col lg:gap-7 lg:overflow-visible lg:px-0">
+            {copy.groups.map((g) => (
+              <div key={g.t.en} className="contents lg:block">
+                <h3 className="mb-2 hidden items-center gap-3 text-sm font-medium text-amber lg:flex">
+                  {tr(g.t, lang)}
+                  <span className="h-px flex-1 bg-gradient-to-l from-transparent to-amber/30 rtl:bg-gradient-to-r" />
+                </h3>
+                <div className="contents lg:flex lg:flex-col">
+                  {g.slugs.map((sl) => {
+                    const item = bySlug[sl];
+                    const on = sl === slug;
+                    return (
+                      <button
+                        key={sl}
+                        role="tab"
+                        id={`tab-${sl}`}
+                        aria-selected={on}
+                        aria-controls="system-monitor"
+                        onClick={() => setSlug(sl)}
+                        onMouseEnter={() => hoverPick(sl)}
+                        className={`chip relative shrink-0 !min-h-[42px] lg:!rounded-2xl lg:!bg-none lg:!shadow-none lg:px-4 lg:py-2.5 lg:text-start lg:text-[1.08rem] ${
+                          on ? '' : 'lg:text-mist'
+                        }`}
+                        aria-pressed={on}
+                      >
+                        {on && (
+                          <motion.span
+                            layoutId="sys-glass"
+                            className="absolute inset-0 hidden rounded-2xl bg-gradient-to-l from-white/[0.16] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.4),inset_0_0_0_1px_rgba(255,255,255,0.12),0_10px_30px_-14px_rgba(0,0,0,0.7)] lg:block rtl:bg-gradient-to-r"
+                            transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+                          >
+                            <span className="absolute inset-y-2.5 start-0 w-[3px] rounded-full bg-amber shadow-[0_0_14px_2px_rgba(255,178,62,0.7)]" />
+                          </motion.span>
+                        )}
+                        <span className={`relative lg:text-paper ${on ? 'lg:!text-paper' : 'lg:!text-mist'}`}>{tr(item.title, lang)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* monitor */}
           <div className="lg:sticky lg:top-28 lg:self-start">
             <div id="system-monitor" role="tabpanel" aria-labelledby={`tab-${s.slug}`} data-glass className="glass glass-refract rim-slow overflow-hidden rounded-[28px] p-3">
               <span className="rim" aria-hidden />
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[20px] bg-lapis">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-[20px] bg-lapis">
                 <div className="drift absolute inset-0">
-                <AnimatePresence initial={false}>
-                  <motion.img
-                    key={s.slug}
-                    src={`img/${s.slug}.jpg`}
-                    alt={tr(s.title, lang)}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    initial={reduce ? { opacity: 0 } : { clipPath: 'circle(0% at 50% 50%)', scale: 1.08 }}
-                    animate={reduce ? { opacity: 1 } : { clipPath: 'circle(75% at 50% 50%)', scale: 1 }}
-                    exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.25 } }}
-                    transition={{ duration: 0.75, ease }}
-                  />
-                </AnimatePresence>
+                  <AnimatePresence initial={false}>
+                    <motion.img
+                      key={s.slug}
+                      src={`img/${s.slug}.jpg`}
+                      alt={tr(s.title, lang)}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      initial={reduce ? { opacity: 0 } : { clipPath: 'circle(0% at 50% 50%)', scale: 1.08 }}
+                      animate={reduce ? { opacity: 1 } : { clipPath: 'circle(75% at 50% 50%)', scale: 1 }}
+                      exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.25 } }}
+                      transition={{ duration: 0.75, ease }}
+                    />
+                  </AnimatePresence>
                 </div>
                 <div className="pointer-events-none absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12),inset_0_-60px_80px_-40px_rgba(12,22,38,0.8)]" aria-hidden />
               </div>
@@ -94,6 +124,12 @@ export default function Systems({ lang }: { lang: Lang }) {
                       </li>
                     ))}
                   </ul>
+                  <div className="mt-7">
+                    <button type="button" onClick={() => quoteSystem(s.slug)} className="rim-fire inline-flex rounded-full" data-magnet>
+                      <span className="rim" aria-hidden />
+                      <span className="btn btn-amber" data-glass>{tr(copy.pickSystem, lang)}</span>
+                    </button>
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>

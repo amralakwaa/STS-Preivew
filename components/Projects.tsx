@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { projects } from '../lib/data';
 import { copy, tr, type Lang } from '../lib/i18n';
 import FocusText from './FocusText';
@@ -29,6 +29,8 @@ export default function Projects({ lang }: { lang: Lang }) {
   const dir = lang === 'ar' ? 1 : -1;
   const x = useTransform(smooth, [0, 1], [0, dir * shift]);
   const bar = useTransform(smooth, [0, 1], [0.08, 1]);
+  const [at, setAt] = useState(1);
+  useMotionValueEvent(smooth, 'change', (v) => setAt(Math.min(projects.length, Math.floor(v * projects.length) + 1)));
 
   if (reduce) {
     return (
@@ -49,8 +51,11 @@ export default function Projects({ lang }: { lang: Lang }) {
             <FocusText text={tr(copy.projects.title, lang)} className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
             <p className="mt-2 text-mist">{tr(copy.projects.sub, lang)}</p>
           </div>
-          <div className="hidden h-[3px] w-48 overflow-hidden rounded-full bg-white/10 sm:block" aria-hidden>
-            <motion.div className="h-full origin-[var(--o)] rounded-full bg-amber" style={{ scaleX: bar, ['--o' as string]: lang === 'ar' ? 'right' : 'left' }} />
+          <div className="hidden items-center gap-4 sm:flex">
+            <span className="text-sm tabular-nums text-mist">{at} {tr(copy.projectOf, lang)} {projects.length}</span>
+            <div className="h-[3px] w-40 overflow-hidden rounded-full bg-white/10" aria-hidden>
+              <motion.div className="h-full origin-[var(--o)] rounded-full bg-amber shadow-[0_0_10px_rgba(255,178,62,0.8)]" style={{ scaleX: bar, ['--o' as string]: lang === 'ar' ? 'right' : 'left' }} />
+            </div>
           </div>
         </div>
         <motion.div ref={track} style={{ x }} className="flex w-max gap-5 px-5 sm:gap-6 sm:px-10">
@@ -66,7 +71,8 @@ function Card({ p, lang }: { p: (typeof projects)[number]; lang: Lang }) {
     <article className="group relative h-[min(62vh,560px)] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[min(64vw,760px)]">
       <img src={`img/${p.slug}.jpg`} alt="" className="drift absolute inset-0 h-full w-full object-cover" loading="lazy" />
       <div className="pointer-events-none absolute inset-0 rounded-[32px] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.12)]" aria-hidden />
-      <div data-glass className="glass glass-refract absolute transition-transform duration-500 group-hover:-translate-y-1.5 inset-x-3 bottom-3 rounded-[24px] p-5 sm:inset-x-4 sm:bottom-4 sm:p-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent" aria-hidden />
+      <div data-glass className="glass glass-ink absolute transition-transform duration-500 group-hover:-translate-y-1.5 inset-x-3 bottom-3 rounded-[24px] p-5 sm:inset-x-4 sm:bottom-4 sm:p-6">
         <p className="text-sm text-mist">{tr(p.city, lang)}، {tr(p.sector, lang)}</p>
         <h3 className="display mt-1 text-xl font-semibold leading-snug sm:text-2xl">{tr(p.name, lang)}</h3>
         <p className="mt-2 line-clamp-2 max-w-[62ch] text-[15px] text-paper/80">{tr(p.desc, lang)}</p>

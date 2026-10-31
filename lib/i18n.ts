@@ -2,6 +2,8 @@ export type Lang = 'ar' | 'en';
 export type L = { ar: string; en: string };
 export const tr = (v: L, lang: Lang) => v[lang];
 
+export const social = { linkedin: 'https://linkedin.com/company/sts-sa', x: 'https://x.com/sts_sa' };
+
 export const contact = {
   phone: '+966 50 676 1942',
   wa: '966506761942',
@@ -80,4 +82,51 @@ export const copy = {
     hoursL: { ar: 'ساعات العمل', en: 'Hours' },
   },
   footer: { ar: 'STS للأنظمة الأمنية والتقنيات الذكية', en: 'STS SecureTech Systems' },
+  trust: {
+    label: { ar: 'حالة المنظومة', en: 'System status' },
+    items: [
+      { n: 150, suffix: '+', t: { ar: 'مشروع منجز في المملكة', en: 'projects delivered in the Kingdom' } },
+      { n: 99.4, suffix: '%', t: { ar: 'نسبة رضا العملاء', en: 'client satisfaction' } },
+      { n: 24, suffix: '/7', t: { ar: 'دعم هندسي واستجابة طوارئ', en: 'engineering support and emergency response' } },
+      { n: 100, suffix: '%', t: { ar: 'أنظمة إنذار معتمدة من الدفاع المدني', en: 'Civil Defense certified alarm systems' } },
+    ],
+    sectors: [
+      { ar: 'الأبراج التجارية', en: 'Office towers' }, { ar: 'الفنادق والمنتجعات', en: 'Hotels and resorts' },
+      { ar: 'الجهات الحكومية', en: 'Government' }, { ar: 'المستشفيات', en: 'Hospitals' },
+      { ar: 'المستودعات والمصانع', en: 'Warehouses and factories' }, { ar: 'القصور والفلل', en: 'Palaces and villas' },
+      { ar: 'المجمعات السكنية', en: 'Residential compounds' }, { ar: 'المراكز التجارية', en: 'Shopping malls' },
+      { ar: 'مراكز البيانات', en: 'Data centers' },
+    ],
+    cities: { ar: 'الرياض، جدة، الدمام، الخبر، مكة المكرمة', en: 'Riyadh, Jeddah, Dammam, Khobar, Makkah' },
+    citiesL: { ar: 'نعمل في', en: 'Working in' },
+  },
+  groups: [
+    { t: { ar: 'الأمن والحماية', en: 'Security' }, slugs: ['cctv-surveillance-systems', 'access-control-systems', 'intrusion-alarm-systems', 'fire-alarm-systems', 'time-attendance-systems'] },
+    { t: { ar: 'البنية التحتية', en: 'Infrastructure' }, slugs: ['networks-and-infrastructure', 'data-centers-and-server-rooms', 'system-integration', 'maintenance-and-technical-support'] },
+    { t: { ar: 'المباني الذكية', en: 'Smart buildings' }, slugs: ['smart-home-automation', 'audio-visual-systems', 'hospitality-solutions'] },
+  ],
+  pickSystem: { ar: 'اطلب عرض سعر لهذا النظام', en: 'Get a quote for this system' },
+  projectOf: { ar: 'من', en: 'of' },
+  reviews: {
+    title: { ar: 'ما يقوله من نحمي منشآتهم', en: 'What the people we protect say' },
+    prev: { ar: 'الرأي السابق', en: 'Previous review' },
+    next: { ar: 'الرأي التالي', en: 'Next review' },
+    pick: { ar: 'اختر رأياً', en: 'Choose a review' },
+  },
+  quick: {
+    call: { ar: 'اتصل بنا', en: 'Call us' },
+    wa: { ar: 'واتساب', en: 'WhatsApp' },
+    copy: { ar: 'نسخ الرقم', en: 'Copy number' },
+    copied: { ar: 'نُسخ الرقم', en: 'Number copied' },
+  },
+  foot: {
+    about: { ar: 'نصمم ونركّب ونصون أنظمة الأمن والبنية التحتية والمباني الذكية للمنشآت في المملكة منذ أول زيارة حتى الصيانة الدورية.', en: 'We design, install and maintain security, infrastructure and smart-building systems for facilities across the Kingdom, from the first visit to routine maintenance.' },
+    systems: { ar: 'الأنظمة', en: 'Systems' },
+    company: { ar: 'الشركة', en: 'Company' },
+    reach: { ar: 'تواصل', en: 'Contact' },
+    reviews: { ar: 'آراء العملاء', en: 'Reviews' },
+    top: { ar: 'إلى الأعلى', en: 'Back to top' },
+    rights: { ar: 'جميع الحقوق محفوظة.', en: 'All rights reserved.' },
+  },
+
 };

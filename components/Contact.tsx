@@ -1,11 +1,12 @@
 'use client';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Copy, MessageCircle, Phone } from 'lucide-react';
 import { services } from '../lib/data';
 import { contact, copy, tr, type Lang } from '../lib/i18n';
 import FocusText from './FocusText';
 
-const main = services.slice(0, 8);
+const main = services.slice(0, 8).map((s) => s.slug);
 
 export default function Contact({ lang }: { lang: Lang }) {
   const f = copy.form;
@@ -15,6 +16,27 @@ export default function Contact({ lang }: { lang: Lang }) {
   const [picked, setPicked] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<{ name?: boolean; phone?: boolean }>({});
+
+  const [copied, setCopied] = useState(false);
+
+  // "Get a quote for this system" on the monitor ticks the system here
+  useEffect(() => {
+    const on = (e: Event) => {
+      const slug = (e as CustomEvent<string>).detail;
+      setPicked((p) => (p.includes(slug) ? p : [...p, slug]));
+    };
+    window.addEventListener('sts:quote', on);
+    return () => window.removeEventListener('sts:quote', on);
+  }, []);
+
+  const copyNumber = async () => {
+    try {
+      await navigator.clipboard.writeText(contact.phone.replace(/\s/g, ''));
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2200);
+    } catch { /* clipboard refused: the number stays visible on the page */ }
+  };
+  const shown = services.filter((x) => main.includes(x.slug) || picked.includes(x.slug));
 
   const toggle = (slug: string) => setPicked((p) => (p.includes(slug) ? p.filter((x) => x !== slug) : [...p, slug]));
 
@@ -35,7 +57,7 @@ export default function Contact({ lang }: { lang: Lang }) {
   };
 
   return (
-    <section id="contact" className="relative scroll-mt-20 overflow-hidden px-5 py-24 sm:px-10 sm:py-36">
+    <section id="contact" className="relative scroll-mt-20 overflow-hidden px-5 py-20 sm:px-10 sm:py-28">
       <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_20%,#000_80%,transparent)]">
         <img src="img/ops-center.jpg" alt="" className="drift absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-luminosity" loading="lazy" />
       </div>
@@ -45,6 +67,13 @@ export default function Contact({ lang }: { lang: Lang }) {
           <FocusText text={tr(f.title, lang)} className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
           <p className="mt-4 max-w-[44ch] text-lg text-mist">{tr(f.sub, lang)}</p>
           <p className="mt-6 max-w-[44ch] text-paper/85">{tr(f.proof, lang)}</p>
+          <div className="mt-8 flex flex-wrap gap-2.5">
+            <a href={`tel:${contact.phone.replace(/\s/g, '')}`} className="btn !min-h-[46px] !px-5 text-[15px]" data-glass data-magnet><Phone size={17} aria-hidden />{tr(copy.quick.call, lang)}</a>
+            <a href={`https://wa.me/${contact.wa}`} target="_blank" rel="noopener noreferrer" className="btn !min-h-[46px] !px-5 text-[15px]" data-glass data-magnet><MessageCircle size={17} aria-hidden />{tr(copy.quick.wa, lang)}</a>
+            <button type="button" onClick={copyNumber} className="btn !min-h-[46px] !px-5 text-[15px]" data-glass data-magnet aria-live="polite">
+              <Copy size={16} aria-hidden />{tr(copied ? copy.quick.copied : copy.quick.copy, lang)}
+            </button>
+          </div>
           <dl className="mt-10 grid gap-5 text-[15px]">
             <div><dt className="text-mist">{tr(f.phoneL, lang)}</dt><dd className="mt-0.5 text-lg"><span dir="ltr">{contact.phone}</span></dd></div>
             <div><dt className="text-mist">{tr(f.emailL, lang)}</dt><dd className="mt-0.5 text-lg">{contact.email}</dd></div>
@@ -80,7 +109,7 @@ export default function Contact({ lang }: { lang: Lang }) {
           <fieldset>
             <legend className="mb-3 text-sm font-medium">{tr(f.systems, lang)}</legend>
             <div className="flex flex-wrap gap-2">
-              {main.map((s) => (
+              {shown.map((s) => (
                 <button key={s.slug} type="button" aria-pressed={picked.includes(s.slug)} onClick={() => toggle(s.slug)} className="chip">{tr(s.title, lang)}</button>
               ))}
             </div>

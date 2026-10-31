@@ -352,6 +352,35 @@ html.refract .lens-ring::before {
   box-shadow: inset 0 1px 0 #fff, 0 8px 22px -10px rgba(255, 255, 255, 0.6);
 }
 
+/* darker glass where text sits on bright photos */
+.glass-ink {
+  background: linear-gradient(165deg, rgba(20, 34, 56, 0.72), rgba(9, 17, 31, 0.62)) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.4);
+          backdrop-filter: blur(22px) saturate(1.4);
+}
+
+/* sectors drifting past */
+.marquee { animation: marquee 40s linear infinite; }
+[dir='rtl'] .marquee { animation-name: marquee-rtl; }
+.marquee:hover { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+@keyframes marquee-rtl { to { transform: translateX(50%); } }
+
+/* text links: a line of light draws in under them */
+.link-glow { position: relative; transition: color 0.3s; }
+.link-glow::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -3px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+  transform: scaleX(0);
+  transition: transform 0.45s var(--ease-out);
+}
+.link-glow:hover { color: var(--paper); }
+.link-glow:hover::after { transform: scaleX(1); }
+
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
