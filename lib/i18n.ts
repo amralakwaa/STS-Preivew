@@ -1,0 +1,83 @@
+export type Lang = 'ar' | 'en';
+export type L = { ar: string; en: string };
+export const tr = (v: L, lang: Lang) => v[lang];
+
+export const contact = {
+  phone: '+966 50 676 1942',
+  wa: '966506761942',
+  email: 'info@sts.com.sa',
+  address: { ar: 'طريق الملك عبد العزيز، حي الياسمين، الرياض', en: 'King Abdulaziz Road, Al-Yasmin, Riyadh' },
+  hours: { ar: 'الأحد إلى الخميس، 8 صباحاً حتى 5 مساءً. الدعم الفني على مدار الساعة.', en: 'Sunday to Thursday, 8 AM to 5 PM. Technical support around the clock.' },
+};
+
+export const copy = {
+  nav: {
+    services: { ar: 'الأنظمة', en: 'Systems' },
+    projects: { ar: 'المشاريع', en: 'Projects' },
+    process: { ar: 'طريقة العمل', en: 'How we work' },
+    contact: { ar: 'تواصل معنا', en: 'Contact' },
+    quote: { ar: 'اطلب عرض سعر', en: 'Request a quote' },
+    lang: { ar: 'English', en: 'العربية' },
+  },
+  hero: {
+    title: { ar: 'نرى ما لا يُرى.', en: 'We see what others miss.' },
+    sub: {
+      ar: 'نصمم أنظمة المراقبة والتحكم في الدخول وإنذار الحريق ومراكز البيانات، ونركّبها ونصونها للمنشآت في المملكة.',
+      en: 'We design, install and maintain surveillance, access control, fire alarm and data center systems for facilities across the Kingdom.',
+    },
+    whatsapp: { ar: 'تواصل عبر واتساب', en: 'Chat on WhatsApp' },
+    hintMouse: { ar: 'حرّك المؤشر لترى المدينة بعين أنظمتنا', en: 'Move your cursor to see the city through our systems' },
+    hintTouch: { ar: 'المس الصورة لتحريك العدسة', en: 'Tap the image to move the lens' },
+    thermal: { ar: 'حراري', en: 'Thermal' },
+    night: { ar: 'رؤية ليلية', en: 'Night vision' },
+    modeLabel: { ar: 'وضع العدسة', en: 'Lens mode' },
+  },
+  detect: {
+    cam: { t: { ar: 'كاميرا STS', en: 'STS camera' }, s: { ar: 'متصلة وتسجّل', en: 'Online, recording' } },
+    tower: { t: { ar: 'برج مكاتب', en: 'Office tower' }, s: { ar: '4 مداخل مؤمّنة', en: '4 entrances secured' } },
+    gate: { t: { ar: 'بوابة دخول', en: 'Entry gate' }, s: { ar: '128 دخولاً مصرّحاً اليوم', en: '128 authorized entries today' } },
+    road: { t: { ar: 'حركة المركبات', en: 'Vehicle traffic' }, s: { ar: 'طبيعية', en: 'Normal' } },
+    fire: { t: { ar: 'إنذار الحريق', en: 'Fire alarm' }, s: { ar: 'جميع الكواشف سليمة', en: 'All detectors healthy' } },
+  },
+  services: {
+    title: { ar: 'اثنا عشر نظاماً، وفريق واحد مسؤول عنها كلها', en: 'Twelve systems, one team accountable for all of them' },
+    sub: { ar: 'اختر نظاماً لترى ما يشمله.', en: 'Pick a system to see what it covers.' },
+    includes: { ar: 'يشمل', en: 'Includes' },
+  },
+  projects: {
+    title: { ar: 'منشآت نحميها اليوم', en: 'Facilities we protect today' },
+    sub: { ar: 'مرّر لتتنقل بين المشاريع.', en: 'Scroll to move through the projects.' },
+  },
+  process: {
+    title: { ar: 'من أول زيارة حتى الصيانة الدورية', en: 'From the first site visit to routine maintenance' },
+    steps: [
+      { t: { ar: 'نفهم احتياجك', en: 'We listen' }, d: { ar: 'جلسة مع مهندس نحدد فيها ما تريد حمايته، ومن يدخل، وما الذي يجب أن يُسجَّل.', en: 'A session with an engineer to pin down what needs protecting, who gets in, and what must be recorded.' } },
+      { t: { ar: 'نعاين الموقع', en: 'We survey the site' }, d: { ar: 'زيارة ميدانية وتحليل للمخاطر، ثم تصميم يناسب المبنى والميزانية.', en: 'An on-site survey and risk analysis, then a design that fits the building and the budget.' } },
+      { t: { ar: 'نجهّز المخططات', en: 'We draw it up' }, d: { ar: 'مخططات تنفيذية وجدول كميات، وتقديم الموافقات للدفاع المدني والجهات المختصة.', en: 'Shop drawings, a bill of quantities, and approvals filed with Civil Defense and the authorities.' } },
+      { t: { ar: 'نركّب ونشغّل', en: 'We install and commission' }, d: { ar: 'تركيب بأيدي فنيين معتمدين، ثم اختبار كل جهاز وتدريب فريقك على النظام.', en: 'Certified technicians install, then we test every device and train your team on the system.' } },
+      { t: { ar: 'نبقى معك', en: 'We stay on' }, d: { ar: 'صيانة وقائية كل ربع سنة، واستجابة للطوارئ على مدار الساعة.', en: 'Quarterly preventive maintenance and around-the-clock emergency response.' } },
+    ],
+  },
+  form: {
+    title: { ar: 'أخبرنا عن منشأتك', en: 'Tell us about your facility' },
+    sub: { ar: 'املأ التفاصيل وأرسلها عبر واتساب، وسيتواصل معك مهندس مختص بعرض سعر مفصّل.', en: 'Fill in the details and send them on WhatsApp. An engineer will follow up with an itemized quote.' },
+    proof: { ar: 'أكثر من 150 مشروعاً منجزاً، ودعم فني على مدار الساعة، وأنظمة إنذار معتمدة من الدفاع المدني.', en: 'Over 150 projects delivered, round-the-clock technical support, and Civil Defense certified alarm systems.' },
+    name: { ar: 'الاسم', en: 'Name' },
+    phone: { ar: 'رقم الجوال', en: 'Mobile number' },
+    type: { ar: 'نوع المنشأة', en: 'Facility type' },
+    types: [
+      { ar: 'تجاري', en: 'Commercial' }, { ar: 'سكني', en: 'Residential' }, { ar: 'حكومي', en: 'Government' },
+      { ar: 'صناعي', en: 'Industrial' }, { ar: 'ضيافة', en: 'Hospitality' },
+    ],
+    systems: { ar: 'الأنظمة المطلوبة', en: 'Systems needed' },
+    notes: { ar: 'ملاحظات (اختياري)', en: 'Notes (optional)' },
+    send: { ar: 'أرسل الطلب عبر واتساب', en: 'Send request on WhatsApp' },
+    errName: { ar: 'اكتب اسمك.', en: 'Enter your name.' },
+    errPhone: { ar: 'اكتب رقم جوال صحيحاً.', en: 'Enter a valid mobile number.' },
+    phoneL: { ar: 'هاتف', en: 'Phone' },
+    emailL: { ar: 'البريد', en: 'Email' },
+    addressL: { ar: 'العنوان', en: 'Address' },
+    hoursL: { ar: 'ساعات العمل', en: 'Hours' },
+  },
+  footer: { ar: 'STS للأنظمة الأمنية والتقنيات الذكية', en: 'STS SecureTech Systems' },
+};
