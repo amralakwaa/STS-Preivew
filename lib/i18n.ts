@@ -99,6 +99,12 @@ export const copy = {
     ],
     cities: { ar: 'الرياض، جدة، الدمام، الخبر، مكة المكرمة', en: 'Riyadh, Jeddah, Dammam, Khobar, Makkah' },
     citiesL: { ar: 'نعمل في', en: 'Working in' },
+    go: [
+      { ar: 'شاهد المشاريع', en: 'See the projects' },
+      { ar: 'اقرأ آراء العملاء', en: 'Read the reviews' },
+      { ar: 'تواصل معنا الآن', en: 'Get in touch now' },
+      { ar: 'نظام إنذار الحريق', en: 'Fire alarm systems' },
+    ],
   },
   groups: [
     { t: { ar: 'الأمن والحماية', en: 'Security' }, slugs: ['cctv-surveillance-systems', 'access-control-systems', 'intrusion-alarm-systems', 'fire-alarm-systems', 'time-attendance-systems'] },

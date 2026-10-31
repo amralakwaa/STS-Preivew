@@ -359,6 +359,59 @@ html.refract .lens-ring::before {
           backdrop-filter: blur(22px) saturate(1.4);
 }
 
+/* ---------- status console ---------- */
+.trust-tile {
+  position: relative;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  transition: box-shadow 0.45s var(--ease-out), background 0.45s;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.trust-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 178, 62, 0.22), rgba(226, 69, 111, 0.08) 40%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.trust-tile:hover::before, .trust-tile:focus-visible::before { opacity: 1; }
+.trust-tile:hover, .trust-tile:focus-visible {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(255, 178, 62, 0.35), 0 24px 50px -24px rgba(255, 140, 60, 0.55);
+}
+.trust-tile > * { position: relative; }
+
+.pulse-dot { transform-box: fill-box; transform-origin: center; animation: pulse-dot 2.4s ease-out infinite; }
+@keyframes pulse-dot { 0% { transform: scale(0.5); opacity: 0.45; } 100% { transform: scale(2.4); opacity: 0; } }
+
+.ekg { stroke-dasharray: 0.28 0.72; animation: ekg linear infinite; }
+@keyframes ekg { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+.scan-sweep {
+  inset-inline-start: 0;
+  background: linear-gradient(90deg, transparent, rgba(79, 227, 181, 0.06) 35%, rgba(255, 255, 255, 0.1) 50%, rgba(79, 227, 181, 0.06) 65%, transparent);
+  animation: scan 8s var(--ease-out) infinite;
+  mix-blend-mode: screen;
+}
+@keyframes scan { 0%, 15% { transform: translateX(-120%); } 85%, 100% { transform: translateX(330%); } }
+[dir='rtl'] .scan-sweep { animation-name: scan-rtl; }
+@keyframes scan-rtl { 0%, 15% { transform: translateX(120%); } 85%, 100% { transform: translateX(-330%); } }
+
+.sector-chip {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: color 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.sector-chip:hover {
+  color: var(--paper);
+  background: linear-gradient(180deg, rgba(255, 178, 62, 0.2), rgba(255, 178, 62, 0.06));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 0 0 1px rgba(255, 178, 62, 0.45), 0 0 22px -6px rgba(255, 160, 60, 0.7);
+}
+
 /* sectors drifting past */
 .marquee { animation: marquee 40s linear infinite; }
 [dir='rtl'] .marquee { animation-name: marquee-rtl; }
