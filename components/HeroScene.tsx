@@ -3,16 +3,13 @@ import { useEffect, useRef } from 'react';
 import type { MotionValue } from 'framer-motion';
 
 /**
- * The hero photo as a living shot. One fragment shader draws:
- *  - traffic running along the light trails (direction taken from the photo's own edges)
- *  - windows switching on and off
- *  - a scan beam sweeping out from the camera
- *  - night haze, film grain and a slow cinematic push-in
- *  - the lens: magnified, recolored as thermal or night vision
- * Calls onReady(false) if WebGL is unavailable so the parent can fall back to plain images.
+ * The hero film (public/video/hero*.mp4, a 12 s seamless loop rendered from the city photo:
+ * traffic on the light trails, windows switching, the camera's scan beam, haze, a slow push-in)
+ * drawn through WebGL so the lens can read the moving picture: magnified and recolored as
+ * thermal or night vision. Calls onReady(false) without WebGL so the parent shows the plain video.
  */
 const frag = `
-precision highp float;
+precision mediump float;
 uniform sampler2D uTex;
 uniform vec2 uRes;
 uniform float uTime;
@@ -20,64 +17,9 @@ uniform vec2 uLens;
 uniform float uR;
 uniform float uMag;
 uniform float uMode;
-uniform float uMove;
 
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-float noise(vec2 p) {
-  vec2 i = floor(p), f = fract(p);
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  return mix(mix(hash(i), hash(i + vec2(1, 0)), u.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), u.x), u.y);
-}
 float lum(vec3 c) { return dot(c, vec3(0.3, 0.45, 0.25)); }
-
-const vec2 IMG = vec2(1376.0, 768.0);
-const vec2 CAM = vec2(0.742, 0.315);
-
-vec3 scene(vec2 uv) {
-  float t = uTime * uMove;
-  vec3 c = texture2D(uTex, uv).rgb;
-  float L = lum(c);
-  vec2 px = uv * IMG;
-
-  // light trails: bright and blue
-  float blue = clamp(c.b - c.r * 0.6, 0.0, 1.0);
-  float trail = smoothstep(0.32, 0.62, L) * smoothstep(0.12, 0.3, blue);
-
-  // direction of the trail from the photo's own gradient
-  vec2 e = 3.0 / IMG;
-  float gx = lum(texture2D(uTex, uv + vec2(e.x, 0.0)).rgb) - lum(texture2D(uTex, uv - vec2(e.x, 0.0)).rgb);
-  float gy = lum(texture2D(uTex, uv + vec2(0.0, e.y)).rgb) - lum(texture2D(uTex, uv - vec2(0.0, e.y)).rgb);
-  vec2 tang = normalize(vec2(-gy, gx) + 1e-4);
-  float lane = hash(floor(px / 22.0));
-  float phase = dot(px, tang) * 0.035 - t * (2.2 + lane * 1.8) + lane * 30.0;
-  float cars = pow(max(0.0, sin(phase)), 6.0) * smoothstep(0.25, 0.6, noise(px * 0.02 + vec2(t * 0.2, 0.0)));
-  c += trail * cars * vec3(0.6, 0.88, 1.0) * 1.1;
-  c *= 1.0 - trail * 0.18 * (1.0 - cars);
-
-  // windows: warm points that switch on and off
-  vec2 cell = floor(px / vec2(5.0, 4.0));
-  float h = hash(cell);
-  float lit = step(0.5, fract(h * 7.0 + floor(t * 0.35 + h * 9.0) * 0.618));
-  // only point lights: brighter than their surroundings
-  vec2 o = 4.0 / IMG;
-  float around = 0.25 * (lum(texture2D(uTex, uv + vec2(o.x, 0.0)).rgb) + lum(texture2D(uTex, uv - vec2(o.x, 0.0)).rgb)
-                       + lum(texture2D(uTex, uv + vec2(0.0, o.y)).rgb) + lum(texture2D(uTex, uv - vec2(0.0, o.y)).rgb));
-  float win = smoothstep(0.1, 0.22, L - around) * (1.0 - trail) * step(0.8, h);
-  c = mix(c, c * mix(0.35, 1.25, lit), win * 0.8);
-
-  // scan beam from the camera
-  vec2 d = (uv - CAM) * vec2(IMG.x / IMG.y, 1.0);
-  float ang = atan(d.y, d.x);
-  float sweep = 2.55 + sin(t * 0.32) * 0.55;
-  float da = abs(mod(ang - sweep + 3.14159, 6.28318) - 3.14159);
-  float beam = smoothstep(0.16, 0.0, da) * smoothstep(0.02, 0.12, length(d)) * smoothstep(1.1, 0.2, length(d));
-  c += beam * vec3(0.45, 0.75, 1.0) * 0.16 * (0.7 + 0.3 * noise(uv * 30.0 + t));
-
-  // night haze drifting low over the city
-  float fog = noise(uv * vec2(3.0, 6.0) + vec2(t * 0.03, 0.0)) * noise(uv * 7.0 - vec2(t * 0.05, 0.0));
-  c += vec3(0.1, 0.18, 0.32) * fog * smoothstep(0.3, 1.0, uv.y) * 0.5;
-  return c;
-}
 
 vec3 thermal(float g) {
   g = clamp(g * 1.5 - 0.12, 0.0, 1.0) * 5.0;
@@ -91,34 +33,29 @@ vec3 thermal(float g) {
 }
 vec3 night(vec3 c, vec2 px) {
   float g = dot(c, vec3(0.35, 0.55, 0.6));
-  vec3 n = vec3(g * 0.32, clamp(g * 1.7 - 0.05, 0.0, 1.0), g * 0.42);
-  return n + vec3(0.0, 0.08, 0.0) * hash(px + uTime);
+  return vec3(g * 0.32, clamp(g * 1.7 - 0.05, 0.0, 1.0), g * 0.42) + vec3(0.0, 0.08, 0.0) * hash(px + uTime);
 }
 
 void main() {
   vec2 frag = gl_FragCoord.xy;
   vec2 uv = vec2(frag.x / uRes.x, 1.0 - frag.y / uRes.y);
-
-  // slow cinematic push-in
-  float z = 1.0 + 0.018 * (0.5 + 0.5 * sin(uTime * uMove * 0.05));
-  vec2 suv = (uv - 0.5) / z + 0.5 + vec2(sin(uTime * uMove * 0.031), cos(uTime * uMove * 0.027)) * 0.004;
-
   vec2 lp = vec2(uLens.x * uRes.x, (1.0 - uLens.y) * uRes.y);
   float dist = length(frag - lp);
   vec3 col;
   if (dist < uR) {
-    vec2 luv = uLens + (uv - uLens) / uMag;
-    vec3 s = scene(luv);
+    vec3 s = texture2D(uTex, uLens + (uv - uLens) / uMag).rgb;
     col = uMode < 0.5 ? thermal(lum(s)) : night(s, frag);
     col *= 1.0 - smoothstep(uR * 0.7, uR, dist) * 0.35;
   } else {
-    col = scene(suv) * 0.72;
+    col = texture2D(uTex, uv).rgb * 0.74;
   }
   col += (hash(frag + fract(uTime) * 100.0) - 0.5) * 0.012;
   gl_FragColor = vec4(col, 1.0);
 }`;
 
 const vert = `attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }`;
+
+export const heroVideoSrc = () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 'video/hero-mobile.mp4' : 'video/hero.mp4');
 
 type Props = {
   sx: MotionValue<number>;
@@ -139,7 +76,7 @@ export default function HeroScene({ sx, sy, r, mag, mode, reduce, onReady, class
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const gl = canvas.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: false });
+    const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
     if (!gl) { onReady(false); return; }
 
     const sh = (type: number, src: string) => { const s = gl.createShader(type)!; gl.shaderSource(s, src); gl.compileShader(s); return s; };
@@ -158,57 +95,70 @@ export default function HeroScene({ sx, sy, r, mag, mode, reduce, onReady, class
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     const u = (n: string) => gl.getUniformLocation(prog, n);
-    const uRes = u('uRes'), uTime = u('uTime'), uLens = u('uLens'), uR = u('uR'), uMag = u('uMag'), uMode = u('uMode'), uMove = u('uMove');
+    const uRes = u('uRes'), uTime = u('uTime'), uLens = u('uLens'), uR = u('uR'), uMag = u('uMag'), uMode = u('uMode');
+
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
     const resize = () => {
-      const k = Math.min(window.devicePixelRatio || 1, 1.25) * (window.innerWidth < 768 ? 0.5 : 0.8);
+      const k = Math.min(window.devicePixelRatio || 1, 1.5) * (window.innerWidth < 768 ? 0.7 : 0.9);
       canvas.width = Math.max(1, Math.round(canvas.offsetWidth * k));
       canvas.height = Math.max(1, Math.round(canvas.offsetHeight * k));
       gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
+    // the film plays in a hidden <video>; with reduced motion it stays on its first frame
+    const video = document.createElement('video');
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.setAttribute('playsinline', '');
+    video.src = heroVideoSrc();
+    let hasFrame = false;
+
     let raf = 0;
     let visible = true;
     const start = performance.now();
     const draw = (now: number) => {
-      gl.uniform2f(uRes, canvas.width, canvas.height);
-      gl.uniform1f(uTime, (now - start) / 1000);
-      gl.uniform2f(uLens, sx.get(), sy.get());
-      gl.uniform1f(uR, r.get() * (canvas.width / canvas.offsetWidth));
-      gl.uniform1f(uMag, mag);
-      gl.uniform1f(uMode, modeRef.current === 'thermal' ? 0 : 1);
-      gl.uniform1f(uMove, reduce ? 0 : 1);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (video.readyState >= 2) {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
+        if (!hasFrame) { hasFrame = true; resize(); onReady(true); }
+      }
+      if (hasFrame) {
+        gl.uniform2f(uRes, canvas.width, canvas.height);
+        gl.uniform1f(uTime, (now - start) / 1000);
+        gl.uniform2f(uLens, sx.get(), sy.get());
+        gl.uniform1f(uR, r.get() * (canvas.width / canvas.offsetWidth));
+        gl.uniform1f(uMag, mag);
+        gl.uniform1f(uMode, modeRef.current === 'thermal' ? 0 : 1);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
       if (visible) raf = requestAnimationFrame(draw);
     };
 
-    const img = new Image();
-    img.onload = () => {
-      const tex = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      resize();
-      onReady(true);
-      raf = requestAnimationFrame(draw);
-    };
-    img.onerror = () => onReady(false);
-    img.src = 'img/hero-city.jpg';
+    const play = () => { if (!reduce) video.play().catch(() => {}); };
+    video.addEventListener('loadeddata', play, { once: true });
+    video.addEventListener('error', () => onReady(false), { once: true });
+    video.load();
+    raf = requestAnimationFrame(draw);
 
-    // stop drawing while the hero is off screen or the tab is hidden
+    // pause the film and the drawing while the hero is off screen or the tab is hidden
     const io = new IntersectionObserver(([e]) => {
       const was = visible;
       visible = e.isIntersecting && !document.hidden;
-      if (visible && !was) raf = requestAnimationFrame(draw);
+      if (visible && !was) { play(); raf = requestAnimationFrame(draw); }
+      if (!visible) video.pause();
     });
     io.observe(canvas);
     const onVis = () => {
-      visible = !document.hidden && canvas.getBoundingClientRect().bottom > 0;
       cancelAnimationFrame(raf);
-      if (visible) raf = requestAnimationFrame(draw);
+      visible = !document.hidden && canvas.getBoundingClientRect().bottom > 0;
+      if (visible) { play(); raf = requestAnimationFrame(draw); } else video.pause();
     };
     document.addEventListener('visibilitychange', onVis);
     const ro = new ResizeObserver(resize);
@@ -219,6 +169,9 @@ export default function HeroScene({ sx, sy, r, mag, mode, reduce, onReady, class
       io.disconnect();
       ro.disconnect();
       document.removeEventListener('visibilitychange', onVis);
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
     };
   }, [sx, sy, r, mag, reduce, onReady]);
 

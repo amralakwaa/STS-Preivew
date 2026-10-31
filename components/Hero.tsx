@@ -5,7 +5,7 @@ import {
 } from 'framer-motion';
 import { Scan } from 'lucide-react';
 import { contact, copy, tr, type Lang } from '../lib/i18n';
-import HeroScene from './HeroScene';
+import HeroScene, { heroVideoSrc } from './HeroScene';
 
 type Mode = 'thermal' | 'night';
 const MAG = 1.22;
@@ -141,7 +141,17 @@ export default function Hero({ lang }: { lang: Lang }) {
         >
           {/* still photo until the live scene is ready, and the fallback if WebGL is missing */}
           {live !== true && (
-            <img src="img/hero-city.jpg" alt="" className="absolute inset-0 h-full w-full select-none" style={{ filter: 'brightness(0.72)' }} draggable={false} />
+            <video
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ filter: 'brightness(0.74)' }}
+              src={heroVideoSrc()}
+              poster="video/hero-poster.jpg"
+              autoPlay={!reduce}
+              muted
+              loop
+              playsInline
+              aria-hidden
+            />
           )}
           {live !== false && (
             <HeroScene sx={sx} sy={sy} r={r} mag={MAG} mode={mode} reduce={!!reduce} onReady={setLive} className={live ? 'opacity-100' : 'opacity-0'} />
