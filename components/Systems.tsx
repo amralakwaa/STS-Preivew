@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { services } from '../lib/data';
 import { copy, tr, type Lang } from '../lib/i18n';
+import FocusText from './FocusText';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -16,7 +17,7 @@ export default function Systems({ lang }: { lang: Lang }) {
   return (
     <section id="services" className="relative scroll-mt-24 px-5 py-24 sm:px-10 sm:py-36">
       <div className="mx-auto max-w-7xl">
-        <h2 className="display max-w-[20ch] text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]">{tr(copy.services.title, lang)}</h2>
+        <FocusText text={tr(copy.services.title, lang)} className="display max-w-[20ch] text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
         <p className="mt-4 text-lg text-mist">{tr(copy.services.sub, lang)}</p>
 
         <div className="mt-14 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
@@ -39,12 +40,14 @@ export default function Systems({ lang }: { lang: Lang }) {
                 >
                   {on && (
                     <motion.span
-                      layoutId="sys-marker"
-                      className="absolute inset-y-3 start-0 hidden w-[3px] rounded-full bg-amber lg:block"
-                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-                    />
+                      layoutId="sys-glass"
+                      className="absolute inset-y-1 -start-2 end-0 hidden rounded-2xl bg-gradient-to-l from-white/[0.12] to-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.1)] lg:block rtl:bg-gradient-to-r"
+                      transition={{ type: 'spring', stiffness: 380, damping: 34 }}
+                    >
+                      <span className="absolute inset-y-3 start-0 w-[3px] rounded-full bg-amber shadow-[0_0_14px_2px_rgba(255,178,62,0.7)]" />
+                    </motion.span>
                   )}
-                  <span className="lg:display">{tr(item.title, lang)}</span>
+                  <span className="relative transition-transform duration-500 lg:display lg:inline-block lg:group-hover:translate-x-0" style={on ? { translate: lang === 'ar' ? '-6px 0' : '6px 0' } : undefined}>{tr(item.title, lang)}</span>
                 </button>
               );
             })}
@@ -52,8 +55,10 @@ export default function Systems({ lang }: { lang: Lang }) {
 
           {/* monitor */}
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <div id="system-monitor" role="tabpanel" aria-labelledby={`tab-${s.slug}`} className="glass overflow-hidden rounded-[28px] p-3">
+            <div id="system-monitor" role="tabpanel" aria-labelledby={`tab-${s.slug}`} data-glass className="glass glass-refract rim-slow overflow-hidden rounded-[28px] p-3">
+              <span className="rim" aria-hidden />
               <div className="relative aspect-[16/10] overflow-hidden rounded-[20px] bg-lapis">
+                <div className="drift absolute inset-0">
                 <AnimatePresence initial={false}>
                   <motion.img
                     key={s.slug}
@@ -66,6 +71,8 @@ export default function Systems({ lang }: { lang: Lang }) {
                     transition={{ duration: 0.75, ease }}
                   />
                 </AnimatePresence>
+                </div>
+                <div className="pointer-events-none absolute inset-0 rounded-[20px] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12),inset_0_-60px_80px_-40px_rgba(12,22,38,0.8)]" aria-hidden />
               </div>
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div

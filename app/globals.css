@@ -83,12 +83,12 @@ html.refract .glass.glass-refract {
 }
 .hero-scrim {
   background:
-    linear-gradient(to top, var(--ink) 0%, rgba(12, 22, 38, 0.78) 26%, rgba(12, 22, 38, 0) 62%),
+    linear-gradient(to top, rgba(9, 17, 31, 0.7) 0%, rgba(9, 17, 31, 0.55) 26%, rgba(9, 17, 31, 0) 62%),
     linear-gradient(to left, rgba(12, 22, 38, 0.7), rgba(12, 22, 38, 0) 55%);
 }
 [dir='ltr'] .hero-scrim {
   background:
-    linear-gradient(to top, var(--ink) 0%, rgba(12, 22, 38, 0.78) 26%, rgba(12, 22, 38, 0) 62%),
+    linear-gradient(to top, rgba(9, 17, 31, 0.7) 0%, rgba(9, 17, 31, 0.55) 26%, rgba(9, 17, 31, 0) 62%),
     linear-gradient(to right, rgba(12, 22, 38, 0.7), rgba(12, 22, 38, 0) 55%);
 }
 
@@ -170,27 +170,154 @@ html.refract .lens-ring::before {
   line-height: 1.35;
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- Liquid glass controls ---------- */
+@property --spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+
 .btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
   min-height: 52px;
-  padding: 0 1.6rem;
+  padding: 0 1.7rem;
   border-radius: 999px;
   font-weight: 600;
   font-size: 16px;
-  transition: transform 0.3s var(--ease-out), background-color 0.3s, box-shadow 0.3s;
+  color: var(--paper);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05) 55%, rgba(255, 255, 255, 0.09));
+  -webkit-backdrop-filter: blur(14px) saturate(1.8);
+          backdrop-filter: blur(14px) saturate(1.8);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -10px 18px -10px rgba(255, 255, 255, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 12px 32px -14px rgba(0, 0, 0, 0.7);
+  transition: scale 0.35s var(--ease-out), translate 0.4s var(--ease-out), box-shadow 0.35s, background-color 0.35s;
 }
-.btn:active { transform: scale(0.97); }
+/* light that follows the pointer across the glass */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(110px circle at var(--gx, 50%) var(--gy, 0%), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0) 70%);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.btn:hover::after { opacity: 1; }
+/* a glint crosses the glass every few seconds */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 62%);
+  background-size: 260% 100%;
+  background-position: 130% 0;
+  animation: glint 5.5s var(--ease-out) infinite;
+  animation-delay: var(--glint-delay, 2.4s);
+}
+@keyframes glint { 0%, 70% { background-position: 130% 0; } 100% { background-position: -130% 0; } }
+.btn:hover { scale: 1.035; }
+.btn:active { scale: 0.96; }
+
+/* the primary action: amber glass with a ring of fire running round its rim */
 .btn-amber {
-  background: var(--amber);
-  color: var(--ink);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 14px 34px -12px rgba(255, 178, 62, 0.7);
+  color: #1a1206;
+  background: linear-gradient(180deg, rgba(255, 210, 128, 0.98), rgba(255, 170, 46, 0.92) 55%, rgba(255, 150, 30, 0.95));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -12px 20px -12px rgba(120, 50, 0, 0.45),
+    0 0 0 1px rgba(255, 196, 94, 0.6),
+    0 16px 40px -14px rgba(255, 160, 40, 0.85),
+    0 0 46px -10px rgba(226, 69, 111, 0.45);
 }
-.btn-amber:hover { background: #ffc266; }
-.btn-glass:hover { background-color: rgba(255, 255, 255, 0.08); }
+.btn-amber:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -12px 20px -12px rgba(120, 50, 0, 0.45),
+    0 0 0 1px rgba(255, 210, 128, 0.9),
+    0 22px 50px -14px rgba(255, 160, 40, 0.95),
+    0 0 70px -8px rgba(226, 69, 111, 0.6);
+}
+.rim-fire { position: relative; }
+.rim-fire > .rim {
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  pointer-events: none;
+  background: conic-gradient(from var(--spin), transparent 0deg, rgba(255, 178, 62, 0) 40deg, #ffb23e 90deg, #e2456f 130deg, rgba(226, 69, 111, 0) 180deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spin 3.6s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 140, 60, 0.9));
+}
+@keyframes spin { to { --spin: 360deg; } }
+
+/* ripple from the press point */
+.ripple {
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 60%);
+  transform: scale(0);
+  animation: ripple 0.7s var(--ease-out) forwards;
+}
+@keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+/* glass panels that carry a slow rim of light */
+.rim-slow > .rim {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(from var(--spin), rgba(255, 255, 255, 0) 0deg, rgba(255, 178, 62, 0.75) 60deg, rgba(79, 227, 181, 0.4) 120deg, rgba(255, 255, 255, 0) 200deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spin 9s linear infinite;
+}
+
+/* pointer light on any glass surface marked data-glass */
+[data-glass].glass::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(380px circle at var(--gx, 50%) var(--gy, -20%), rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 60%);
+  transition: opacity 0.4s;
+}
+
+/* light catching the glass letters of the hero headline, one word after another */
+.sheen-word {
+  background-image: linear-gradient(105deg, var(--paper) 0%, var(--paper) 40%, #ffffff 46%, #ffd28a 50%, #ffffff 54%, var(--paper) 60%, var(--paper) 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: word-sheen 7s var(--ease-out) infinite;
+  animation-delay: calc(3s + var(--i, 0) * 0.14s);
+  text-shadow: none;
+  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.45));
+}
+@keyframes word-sheen { 0%, 72% { background-position: 100% 0; } 100% { background-position: 0% 0; } }
+
+/* slow drift on photos so nothing on the page is ever quite still */
+.drift { animation: drift 22s ease-in-out infinite alternate; }
+@keyframes drift { from { transform: scale(1.06) translate3d(-1.2%, -0.8%, 0); } to { transform: scale(1.12) translate3d(1.2%, 0.8%, 0); } }
+.breathe { animation: breathe 18s ease-in-out infinite alternate; }
+@keyframes breathe { from { scale: 1; } to { scale: 1.045; } }
 
 /* ---------- Inputs ---------- */
 .field {
@@ -199,30 +326,36 @@ html.refract .lens-ring::before {
   padding: 0.75rem 1rem;
   border-radius: 14px;
   color: var(--paper);
-  background: rgba(12, 22, 38, 0.45);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
   border: 1px solid rgba(255, 255, 255, 0.16);
-  transition: border-color 0.25s, background-color 0.25s;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: border-color 0.25s, background-color 0.25s, box-shadow 0.25s;
 }
 .field::placeholder { color: rgba(200, 212, 230, 0.55); }
-.field:focus { outline: none; border-color: var(--amber); background: rgba(12, 22, 38, 0.65); }
+.field:focus { outline: none; border-color: var(--amber); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 0 4px rgba(255, 178, 62, 0.18); }
 .chip {
+  position: relative;
   min-height: 40px;
   padding: 0 1rem;
   border-radius: 999px;
   font-size: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
   color: var(--mist);
-  transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transition: background-color 0.25s, color 0.25s, box-shadow 0.25s, scale 0.3s var(--ease-out);
 }
+.chip:hover { color: var(--paper); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 24px -8px rgba(255, 178, 62, 0.6); }
+.chip:active { scale: 0.95; }
 .chip[aria-pressed='true'], .chip[aria-checked='true'] {
-  background: var(--paper);
+  background: linear-gradient(180deg, #ffffff, #dfe8f4);
   color: var(--ink);
-  border-color: var(--paper);
+  box-shadow: inset 0 1px 0 #fff, 0 8px 22px -10px rgba(255, 255, 255, 0.6);
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
+  .sheen-word { -webkit-text-fill-color: var(--paper); }
 }

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { projects } from '../lib/data';
 import { copy, tr, type Lang } from '../lib/i18n';
+import FocusText from './FocusText';
 
 /** Vertical scroll drives the strip of projects sideways. */
 export default function Projects({ lang }: { lang: Lang }) {
@@ -45,7 +46,7 @@ export default function Projects({ lang }: { lang: Lang }) {
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
         <div className="mx-auto mb-8 flex w-full max-w-7xl items-end justify-between gap-6 px-5 pt-20 sm:px-10">
           <div>
-            <h2 className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]">{tr(copy.projects.title, lang)}</h2>
+            <FocusText text={tr(copy.projects.title, lang)} className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
             <p className="mt-2 text-mist">{tr(copy.projects.sub, lang)}</p>
           </div>
           <div className="hidden h-[3px] w-48 overflow-hidden rounded-full bg-white/10 sm:block" aria-hidden>
@@ -63,8 +64,9 @@ export default function Projects({ lang }: { lang: Lang }) {
 function Card({ p, lang }: { p: (typeof projects)[number]; lang: Lang }) {
   return (
     <article className="group relative h-[min(62vh,560px)] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[min(64vw,760px)]">
-      <img src={`img/${p.slug}.jpg`} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105" loading="lazy" />
-      <div className="glass glass-refract absolute inset-x-3 bottom-3 rounded-[24px] p-5 sm:inset-x-4 sm:bottom-4 sm:p-6">
+      <img src={`img/${p.slug}.jpg`} alt="" className="drift absolute inset-0 h-full w-full object-cover" loading="lazy" />
+      <div className="pointer-events-none absolute inset-0 rounded-[32px] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.12)]" aria-hidden />
+      <div data-glass className="glass glass-refract absolute transition-transform duration-500 group-hover:-translate-y-1.5 inset-x-3 bottom-3 rounded-[24px] p-5 sm:inset-x-4 sm:bottom-4 sm:p-6">
         <p className="text-sm text-mist">{tr(p.city, lang)}، {tr(p.sector, lang)}</p>
         <h3 className="display mt-1 text-xl font-semibold leading-snug sm:text-2xl">{tr(p.name, lang)}</h3>
         <p className="mt-2 line-clamp-2 max-w-[62ch] text-[15px] text-paper/80">{tr(p.desc, lang)}</p>

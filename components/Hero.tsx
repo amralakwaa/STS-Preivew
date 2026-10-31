@@ -109,16 +109,26 @@ export default function Hero({ lang }: { lang: Lang }) {
     fy.set(y);
   };
 
+  // the whole scene leans gently against the pointer
+  const px = useSpring(0, { stiffness: 40, damping: 20 });
+  const py = useSpring(0, { stiffness: 40, damping: 20 });
+  const lean = (e: PointerEvent) => {
+    if (reduce || e.pointerType !== 'mouse') return;
+    px.set((e.clientX / window.innerWidth - 0.5) * -28);
+    py.set((e.clientY / window.innerHeight - 0.5) * -18);
+  };
+
   const words = tr(copy.hero.title, lang).split(' ');
   const glow = mode === 'thermal' ? 'rgba(255,178,62,0.55)' : 'rgba(79,227,181,0.5)';
 
   return (
     <section
       className={`hero relative overflow-hidden ${mode === 'night' ? 'mode-night' : ''}`}
-      onPointerMove={(e) => e.pointerType === 'mouse' && moveTo(e)}
+      onPointerMove={(e) => { if (e.pointerType === 'mouse') { moveTo(e); lean(e); } }}
       onPointerDown={(e) => e.pointerType !== 'mouse' && moveTo(e)}
       aria-label={tr(copy.hero.title, lang)}
     >
+      <motion.div className={`absolute inset-0 ${reduce ? '' : 'breathe'}`} style={{ x: px, y: py, WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent)', maskImage: 'linear-gradient(to bottom, #000 72%, transparent)' }}>
       <div ref={frameRef} className="hero-frame">
         {/* the city, pulling into focus on load */}
         <motion.img
@@ -127,7 +137,7 @@ export default function Hero({ lang }: { lang: Lang }) {
           className="absolute inset-0 h-full w-full select-none"
           draggable={false}
           initial={reduce ? false : { filter: 'blur(18px) brightness(0.3)', scale: 1.08 }}
-          animate={{ filter: 'blur(0px) brightness(0.68)', scale: 1 }}
+          animate={{ filter: 'blur(0px) brightness(0.7)', scale: 1, opacity: 0.86 }}
           transition={{ duration: 1.6, ease }}
         />
 
@@ -173,6 +183,7 @@ export default function Hero({ lang }: { lang: Lang }) {
           <span className="lens-tick" style={{ right: 10, top: '50%', height: 2, width: 10, marginTop: -1 }} />
         </motion.div>
       </div>
+      </motion.div>
 
       <div className="hero-scrim pointer-events-none absolute inset-0" />
 
@@ -185,7 +196,8 @@ export default function Hero({ lang }: { lang: Lang }) {
           {words.map((w, i) => (
             <motion.span
               key={`${lang}-${i}`}
-              className="inline-block"
+              className="sheen-word inline-block"
+              style={{ ['--i' as string]: i }}
               initial={reduce ? false : { opacity: 0, filter: 'blur(14px)', y: 24 }}
               animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
               transition={{ duration: 0.9, delay: 1.2 + i * 0.09, ease }}
@@ -204,8 +216,11 @@ export default function Hero({ lang }: { lang: Lang }) {
           <div>
             <p className="max-w-[46ch] text-lg text-mist sm:text-xl">{tr(copy.hero.sub, lang)}</p>
             <div className="pointer-events-auto mt-7 flex flex-wrap gap-3">
-              <a href="#contact" className="btn btn-amber">{tr(copy.nav.quote, lang)}</a>
-              <a href={`https://wa.me/${contact.wa}`} target="_blank" rel="noopener noreferrer" className="btn btn-glass glass text-paper">
+              <a href="#contact" className="rim-fire inline-flex rounded-full" data-magnet>
+                <span className="rim" aria-hidden />
+                <span className="btn btn-amber" data-glass>{tr(copy.nav.quote, lang)}</span>
+              </a>
+              <a href={`https://wa.me/${contact.wa}`} target="_blank" rel="noopener noreferrer" className="btn" data-glass data-magnet style={{ ['--glint-delay' as string]: '3.4s' }}>
                 {tr(copy.hero.whatsapp, lang)}
               </a>
             </div>
@@ -216,7 +231,7 @@ export default function Hero({ lang }: { lang: Lang }) {
               <Scan size={16} className="text-amber" aria-hidden />
               {tr(coarse ? copy.hero.hintTouch : copy.hero.hintMouse, lang)}
             </p>
-            <div role="radiogroup" aria-label={tr(copy.hero.modeLabel, lang)} className="glass flex rounded-full p-1">
+            <div role="radiogroup" aria-label={tr(copy.hero.modeLabel, lang)} className="glass flex rounded-full p-1" data-glass>
               {(['thermal', 'night'] as Mode[]).map((m) => (
                 <button
                   key={m}

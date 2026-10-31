@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { services } from '../lib/data';
 import { contact, copy, tr, type Lang } from '../lib/i18n';
+import FocusText from './FocusText';
 
 const main = services.slice(0, 8);
 
@@ -35,12 +36,13 @@ export default function Contact({ lang }: { lang: Lang }) {
 
   return (
     <section id="contact" className="relative scroll-mt-20 overflow-hidden px-5 py-24 sm:px-10 sm:py-36">
-      <img src="img/ops-center.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-45" loading="lazy" />
-      <div className="absolute inset-0 bg-gradient-to-b from-ink via-ink/70 to-ink" aria-hidden />
+      <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_20%,#000_80%,transparent)]">
+        <img src="img/ops-center.jpg" alt="" className="drift absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-luminosity" loading="lazy" />
+      </div>
 
       <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
-          <h2 className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]">{tr(f.title, lang)}</h2>
+          <FocusText text={tr(f.title, lang)} className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
           <p className="mt-4 max-w-[44ch] text-lg text-mist">{tr(f.sub, lang)}</p>
           <p className="mt-6 max-w-[44ch] text-paper/85">{tr(f.proof, lang)}</p>
           <dl className="mt-10 grid gap-5 text-[15px]">
@@ -51,7 +53,8 @@ export default function Contact({ lang }: { lang: Lang }) {
           </dl>
         </div>
 
-        <form onSubmit={submit} noValidate className="glass glass-refract grid gap-6 rounded-[32px] p-6 sm:p-9">
+        <form onSubmit={submit} noValidate data-glass className="glass glass-refract rim-slow grid gap-6 rounded-[32px] p-6 sm:p-9">
+          <span className="rim" aria-hidden />
           <div className="grid gap-5 sm:grid-cols-2">
             <label className="grid gap-2">
               <span className="text-sm font-medium">{tr(f.name, lang)}</span>
@@ -89,7 +92,10 @@ export default function Contact({ lang }: { lang: Lang }) {
           </label>
 
           <div>
-            <button type="submit" className="btn btn-amber w-full sm:w-auto">{tr(f.send, lang)}</button>
+            <span className="rim-fire flex w-full rounded-full sm:inline-flex sm:w-auto" data-magnet>
+              <span className="rim" aria-hidden />
+              <button type="submit" className="btn btn-amber w-full sm:w-auto" data-glass>{tr(f.send, lang)}</button>
+            </span>
             <AnimatePresence>
               {picked.length > 0 && (
                 <motion.p initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-3 text-sm text-mist">
