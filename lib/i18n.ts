@@ -154,6 +154,10 @@ export const copy = {
     reviews: { ar: 'آراء العملاء', en: 'Reviews' },
     top: { ar: 'إلى الأعلى', en: 'Back to top' },
     rights: { ar: 'جميع الحقوق محفوظة.', en: 'All rights reserved.' },
+    status: { ar: 'جميع الأنظمة تعمل', en: 'All systems operational' },
+    follow: { ar: 'تابعنا', en: 'Follow us' },
+    allSystems: { ar: 'كل الأنظمة', en: 'All systems' },
+    ready: { ar: 'جاهزون لتأمين منشأتك', en: 'Ready to secure your facility' },
   },
 
 };

@@ -18,7 +18,9 @@ export default function WhatsAppFloat({ lang }: { lang: Lang }) {
     const check = () => {
       const c = document.getElementById('contact')?.getBoundingClientRect();
       const inContact = c ? c.top < window.innerHeight * 0.6 && c.bottom > window.innerHeight * 0.4 : false;
-      setShow(window.scrollY > window.innerHeight * 0.75 && !inContact);
+      const foot = document.querySelector('footer')?.getBoundingClientRect();
+      const atFooter = foot ? foot.top < window.innerHeight * 0.85 : false;
+      setShow(window.scrollY > window.innerHeight * 0.75 && !inContact && !atFooter);
     };
     check();
     window.addEventListener('scroll', check, { passive: true });

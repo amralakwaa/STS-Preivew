@@ -401,6 +401,90 @@ html.refract .lens-ring::before {
 }
 @keyframes orbit { to { transform: rotate(360deg); } }
 
+/* ---------- footer ---------- */
+.foot-rule { height: 1px; margin-inline: 1.5rem; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16) 20%, rgba(255, 178, 62, 0.45) 50%, rgba(255, 255, 255, 0.16) 80%, transparent); }
+@media (min-width: 1024px) {
+  .foot-col { padding-inline: 2rem; }
+  .foot-col + .foot-col { border-inline-start: 1px solid transparent; border-image: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.14) 20%, rgba(255, 255, 255, 0.14) 80%, transparent) 1; }
+}
+.foot-h { font-family: 'Reem Kufi', 'IBM Plex Sans Arabic', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--paper); }
+.foot-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--mist);
+  transition: color 0.3s, translate 0.4s var(--ease-out);
+}
+.foot-link::before {
+  content: '';
+  width: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(255, 178, 62, 0.9);
+  transition: width 0.4s var(--ease-out);
+}
+.foot-link:hover, .foot-link:focus-visible { color: var(--paper); }
+.foot-link:hover::before, .foot-link:focus-visible::before { width: 14px; }
+.foot-contact { display: flex; align-items: flex-start; gap: 0.75rem; line-height: 1.5; }
+.foot-ico {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  margin-top: -5px;
+  border-radius: 12px;
+  color: var(--amber);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: box-shadow 0.35s, color 0.35s, scale 0.35s var(--ease-out);
+}
+a.foot-contact:hover .foot-ico { scale: 1.08; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 0 0 1px rgba(255, 178, 62, 0.5), 0 0 20px -4px rgba(255, 160, 60, 0.8); }
+.foot-status {
+  background: linear-gradient(160deg, rgba(79, 227, 181, 0.08), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(79, 227, 181, 0.18);
+}
+
+/* the STS signature */
+.wordmark {
+  font-family: 'Reem Kufi', sans-serif;
+  font-weight: 700;
+  font-size: clamp(7rem, 24vw, 19rem);
+  line-height: 0.8;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding-top: 0.06em;
+  margin-bottom: -0.06em;
+}
+.wordmark-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.16);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 70%);
+  -webkit-background-clip: text;
+          background-clip: text;
+}
+.wordmark-thermal {
+  color: transparent;
+  background: linear-gradient(100deg, #2a1660, #7a1e8c 18%, #e2456f 36%, #ffb23e 52%, #fff3c4 60%, #ffb23e 70%, #e2456f 86%, #7a1e8c);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+          background-clip: text;
+  animation: thermal-shift 10s linear infinite;
+}
+@keyframes thermal-shift { to { background-position: 200% 0; } }
+.wordmark-lens {
+  position: absolute;
+  width: clamp(120px, 15vw, 220px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 0 28px 6px rgba(12, 22, 38, 0.35), 0 0 60px -10px rgba(255, 178, 62, 0.55);
+  background: radial-gradient(60% 40% at 30% 16%, rgba(255, 255, 255, 0.3), transparent 70%);
+}
+
 /* ---------- floating WhatsApp ---------- */
 .wa-float {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04));
