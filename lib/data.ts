@@ -534,3 +534,61 @@ export const reviews: { name: string; role: string; company: string; city: strin
   }
  }
 ];
+
+// Project details from the STS site.
+export const projectDetails: Record<string, { client: string; place: string; year: string; content: L }> = {
+ "al-faisaliah-commercial-tower": {
+  "client": "شركة أفق للاستثمار العقاري",
+  "place": "الرياض - طريق الملك فهد",
+  "year": "2025",
+  "content": {
+   "ar": "تم تنفيذ المشروع على مساحة 25,000 متر مربع ويشمل 28 طابقاً، حيث تم تركيب أكثر من 350 كاميرا ذكية، و16 بوابة دخول سريعة بتقنية التعرف على الوجه، وشبكة ألياف ضوئية متكاملة لربط كافة مرافق البرج بغرفة التحكم المركزية.",
+   "en": "Executed across 25,000 sqm encompassing 28 stories. Deployed 350+ smart IP cameras, 16 optical turnstiles with facial recognition, and a certified high-speed fiber backbone linking all building facilities to the central security command center."
+  }
+ },
+ "grand-resort-and-spa-hospitality": {
+  "client": "مجموعة شواطئ البحر الأحمر الفندقية",
+  "place": "جدة - الكورنيش الشمالي",
+  "year": "2025",
+  "content": {
+   "ar": "مشروع ضيافة متكامل يوفر أقصى درجات الرفاهية والتحكم الذكي لنزلاء المنتجع. يشمل لوحات تحكم لمسية جدارية للغرف، وتكامل الإضاءة مع التكييف لتوفير الطاقة بنسبة 35%، ونظام إنذار حريق معنون يغطي كافة أرجاء المنتجع.",
+   "en": "A turnkey hospitality technology project delivering five-star guest comfort and energy optimization. Features capacitive touch bedside panels, occupancy-based climate automation saving 35% on cooling, and full Civil Defense certified fire alarm coverage."
+  }
+ },
+ "al-nakheel-luxury-villa-automation": {
+  "client": "عميل خاص",
+  "place": "الخبر - حي الشاطئ",
+  "year": "2025",
+  "content": {
+   "ar": "قصر خاص متكامل التقنيات على مساحة 4,500 متر مربع. تم ربط أكثر من 200 دائرة إضاءة وتكييف بنظام تحكم ذكي بشاشات لمس فاخرة وتطبيق هاتف موحد، مع تأمين كامل المحيط الخارجي بكاميرات حرارية ومستشعرات اهتزاز.",
+   "en": "Palatial residential residence across 4,500 sqm. Integrated 200+ lighting and HVAC circuits through a bespoke KNX bus, custom glass touch panels, and secure remote mobile monitoring alongside perimeter thermal surveillance."
+  }
+ },
+ "industrial-logistics-distribution-center": {
+  "client": "الشركة الوطنية للخدمات اللوجستية",
+  "place": "الدمام - المدينة الصناعية الثانية",
+  "year": "2025",
+  "content": {
+   "ar": "تم تجهيز مجمع المستودعات البالغة مساحته 40,000 متر مربع بأنظمة حماية المحيط الخارجي، وتأمين البوابات عبر التعرف الآلي على لوحات شاحنات النقل (ANPR)، وتوفير بنية تحتية لاسلكية قوية تدعم أجهزة المسح الضوئي اللحظية.",
+   "en": "Fitted out a 40,000 sqm industrial logistics center with perimeter security, automated ANPR truck gate barriers, high-sensitivity optical beam fire sensors, and high-density industrial wireless coverage for handheld RFID barcode scanners."
+  }
+ },
+ "central-data-center-tier-3": {
+  "client": "هيئة تقنية وطنية",
+  "place": "الرياض - واحة التقنية",
+  "year": "2024",
+  "content": {
+   "ar": "إنشاء بيئة خوادم عالية الكفاءة تدعم استمرارية تشغيل بنسبة 99.982%. يشمل المشروع 40 كابينة خوادم، وأنظمة مراقبة بيئية ذكية لحرارة ورطوبة الأجهزة، ونظام تحكم بالدخول عبر البصمة البيومترية المشفرة لخزائن السيرفرات.",
+   "en": "Designed and commissioned a robust server facility guaranteeing 99.982% uptime. Features 40 high-density server racks, comprehensive temperature/humidity telemetry, and rack-level biometric access locks."
+  }
+ },
+ "healthcare-specialty-hospital-av-security": {
+  "client": "مجموعة الرعاية الحديثة الطبية",
+  "place": "مكة المكرمة - العزيزية",
+  "year": "2024",
+  "content": {
+   "ar": "تجهيز صرح طبي متقدم بسعة 180 سريراً. تم دمج نظام النداء الطبي السريع مع هواتف التمريض الذكية، وتركيب كاميرات مراقبة ذكية للأروقة والمداخل تراعي خصوصية المرضى، ونظام بطاقات ذكية للأطباء والكوادر التمريضية.",
+   "en": "Equipped a 180-bed specialty hospital. Unified the IP nurse call alert matrix with staff mobile handsets, deployed compliant corridor CCTV, and implemented smart multi-level credential badges for medical teams."
+  }
+ }
+};

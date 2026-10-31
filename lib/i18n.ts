@@ -125,6 +125,27 @@ export const copy = {
     copy: { ar: 'نسخ الرقم', en: 'Copy number' },
     copied: { ar: 'نُسخ الرقم', en: 'Number copied' },
   },
+  stage: {
+    of: { ar: 'من', en: 'of' },
+    step: { ar: 'المرحلة', en: 'Stage' },
+  },
+  proj: {
+    open: { ar: 'عرض تفاصيل المشروع', en: 'View project details' },
+    client: { ar: 'العميل', en: 'Client' },
+    place: { ar: 'الموقع', en: 'Location' },
+    year: { ar: 'سنة التسليم', en: 'Delivered' },
+    similar: { ar: 'اطلب مشروعاً مشابهاً', en: 'Request a similar project' },
+    close: { ar: 'إغلاق', en: 'Close' },
+    prev: { ar: 'المشروع السابق', en: 'Previous project' },
+    next: { ar: 'المشروع التالي', en: 'Next project' },
+    note: { ar: 'أريد مشروعاً مشابهاً لـ', en: 'I would like a project similar to' },
+  },
+  waFloat: { ar: 'تحدث معنا على واتساب', en: 'Chat with us on WhatsApp' },
+  notFound: {
+    title: { ar: 'هذه الصفحة خارج نطاق كاميراتنا.', en: 'This page is outside our cameras’ range.' },
+    sub: { ar: 'ربما تغيّر الرابط أو كُتب بشكل خاطئ. الصفحة الرئيسية فيها كل ما تبحث عنه.', en: 'The link may have changed or been mistyped. Everything you are looking for is on the home page.' },
+    home: { ar: 'العودة إلى الصفحة الرئيسية', en: 'Back to the home page' },
+  },
   foot: {
     about: { ar: 'نصمم ونركّب ونصون أنظمة الأمن والبنية التحتية والمباني الذكية للمنشآت في المملكة منذ أول زيارة حتى الصيانة الدورية.', en: 'We design, install and maintain security, infrastructure and smart-building systems for facilities across the Kingdom, from the first visit to routine maintenance.' },
     systems: { ar: 'الأنظمة', en: 'Systems' },

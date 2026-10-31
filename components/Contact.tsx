@@ -25,8 +25,10 @@ export default function Contact({ lang }: { lang: Lang }) {
       const slug = (e as CustomEvent<string>).detail;
       setPicked((p) => (p.includes(slug) ? p : [...p, slug]));
     };
+    const onNote = (e: Event) => setNotes((n) => (n.trim() ? n + '\n' : '') + (e as CustomEvent<string>).detail);
     window.addEventListener('sts:quote', on);
-    return () => window.removeEventListener('sts:quote', on);
+    window.addEventListener('sts:note', onNote);
+    return () => { window.removeEventListener('sts:quote', on); window.removeEventListener('sts:note', onNote); };
   }, []);
 
   const copyNumber = async () => {

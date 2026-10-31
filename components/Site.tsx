@@ -13,6 +13,7 @@ import Contact from './Contact';
 import Trust from './Trust';
 import Reviews from './Reviews';
 import Footer from './Footer';
+import WhatsAppFloat from './WhatsAppFloat';
 import { copy, tr, type Lang } from '../lib/i18n';
 
 export default function Site() {
@@ -39,6 +40,7 @@ export default function Site() {
         <Contact lang={lang} />
       </main>
       <Footer lang={lang} />
+      <WhatsAppFloat lang={lang} />
     </MotionConfig>
   );
 }
