@@ -34,6 +34,12 @@ export default function Projects({ lang }: { lang: Lang }) {
   const bar = useTransform(smooth, [0, 1], [0.08, 1]);
   const [at, setAt] = useState(1);
   const [open, setOpen] = useState<string | null>(null);
+  // the map (and anything else) can open a project by slug
+  useEffect(() => {
+    const on = (e: Event) => setOpen((e as CustomEvent<string>).detail);
+    window.addEventListener('sts:project', on);
+    return () => window.removeEventListener('sts:project', on);
+  }, []);
   const modal = (
     <AnimatePresence>
       {open && <ProjectModal key="modal" slug={open} lang={lang} onClose={() => setOpen(null)} onSlug={setOpen} />}

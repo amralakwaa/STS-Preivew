@@ -68,7 +68,7 @@ export default function Footer({ lang }: { lang: Lang }) {
   const f = copy.foot;
   const links = [
     { id: 'services', l: copy.nav.services }, { id: 'projects', l: copy.nav.projects },
-    { id: 'process', l: copy.nav.process }, { id: 'reviews', l: f.reviews }, { id: 'contact', l: copy.nav.contact },
+    { id: 'process', l: copy.nav.process }, { id: 'reviews', l: f.reviews }, { id: 'coverage', l: copy.coverage.nav }, { id: 'contact', l: copy.nav.contact },
   ];
   const tel = contact.phone.replace(/\s/g, '');
 
