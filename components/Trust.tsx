@@ -5,42 +5,61 @@ import { copy, tr, type Lang } from '../lib/i18n';
 import { pickSystem } from './Systems';
 
 const ease = [0.22, 1, 0.36, 1] as const;
-const GLYPHS = '0123456789';
+const settle = [0.16, 1, 0.3, 1] as const;
 
 /* ------------------------------------------------------------------ */
-/* the number: counts up on reveal, decodes like a terminal on hover   */
+/* odometer: every digit is a drum of glass that rolls and settles;    */
+/* the units turn three times, the tens twice, the rest once            */
 /* ------------------------------------------------------------------ */
-function Readout({ n, suffix, hot }: { n: number; suffix: string; hot: boolean }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const seen = useInView(ref, { once: true, margin: '-10% 0px' });
+function Drum({ d, place, run, spin }: { d: number; place: number; run: boolean; spin: number }) {
   const reduce = useReducedMotion();
-  const dec = n % 1 ? 1 : 0;
-  const final = n.toFixed(dec) + suffix;
+  const turns = place === 0 ? 3 : place === 1 ? 2 : 1;
+  const total = turns * 10 + d;
+  const y = useMotionValue(0);
+  const ty = useTransform(y, (v) => `${v * 1.1}em`);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el || !seen) return;
-    if (reduce) { el.textContent = final; return; }
-    const c = animate(0, n, { duration: 2.2, ease, onUpdate: (v) => { el.textContent = v.toFixed(dec) + suffix; } });
+    if (!run) return;
+    if (reduce) { y.set(-total); return; }
+    // first run rolls up from zero; a hover re-roll does one quick turn and lands on the same digit
+    y.set(spin > 0 ? -(total - 10) : 0);
+    const c = animate(y, -total, spin > 0
+      ? { duration: 0.8 + (2 - Math.min(place, 2)) * 0.12, ease: settle }
+      : { duration: 2.6 + (2 - Math.min(place, 2)) * 0.35, ease: settle });
     return () => c.stop();
-  }, [seen, n, suffix, dec, final, reduce]);
+  }, [run, spin, total, place, reduce, y]);
+
+  return (
+    <span className="odo-slot" aria-hidden>
+      <motion.span className="odo-strip" style={{ y: ty }}>
+        {Array.from({ length: total + 1 }, (_, k) => <span key={k}>{k % 10}</span>)}
+      </motion.span>
+    </span>
+  );
+}
+
+function Readout({ n, suffix, hot, run }: { n: number; suffix: string; hot: boolean; run: boolean }) {
+  const value = n.toFixed(n % 1 ? 1 : 0) + suffix;
+  const chars = value.split('');
+  const [spin, setSpin] = useState(0);
+  const landed = useRef(false);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el || !hot || reduce || !seen) return;
-    let frame = 0;
-    const id = window.setInterval(() => {
-      frame++;
-      el.textContent = final
-        .split('')
-        .map((ch, i) => (/\d/.test(ch) && frame < 10 + i * 3 ? GLYPHS[Math.floor(Math.random() * 10)] : ch))
-        .join('');
-      if (frame > 10 + final.length * 3) { el.textContent = final; window.clearInterval(id); }
-    }, 40);
-    return () => { window.clearInterval(id); el.textContent = final; };
-  }, [hot, final, reduce, seen]);
+    if (!run) return;
+    const id = window.setTimeout(() => { landed.current = true; }, 3400);
+    return () => window.clearTimeout(id);
+  }, [run]);
+  useEffect(() => { if (hot && landed.current) setSpin((v) => v + 1); }, [hot]);
 
-  return <span ref={ref} dir="ltr">0{suffix}</span>;
+  return (
+    <span dir="ltr" className="odo" aria-label={value} role="img">
+      {chars.map((c, i) => {
+        if (!/\d/.test(c)) return <span key={i} className="odo-sym" aria-hidden>{c}</span>;
+        const place = chars.slice(i + 1).filter((x) => /\d/.test(x)).length;
+        return <Drum key={i} d={+c} place={place} run={run} spin={spin} />;
+      })}
+    </span>
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -210,6 +229,13 @@ export default function Trust({ lang }: { lang: Lang }) {
     `radial-gradient(520px circle at ${x}% ${y}%, rgba(255,178,62,0.16), transparent 45%), radial-gradient(380px circle at ${100 - (x as number)}% ${100 - (y as number)}%, rgba(226,69,111,0.12), transparent 50%), radial-gradient(600px circle at ${x}% 120%, rgba(79,227,181,0.08), transparent 55%)`);
   const loop = [...t.sectors, ...t.sectors];
 
+  // the counters start once the page has opened (after the hero's own entrance),
+  // or as soon as the card comes into view if it was below the fold
+  const [opened, setOpened] = useState(false);
+  const inView = useInView(card, { once: true, amount: 0.35 });
+  useEffect(() => { const id = window.setTimeout(() => setOpened(true), 1700); return () => window.clearTimeout(id); }, []);
+  const run = opened && inView;
+
   useEffect(() => {
     const c = sparks.current, el = card.current;
     if (!c || !el) return;
@@ -282,7 +308,7 @@ export default function Trust({ lang }: { lang: Lang }) {
                 <>
                   <div className="flex items-start justify-between gap-4">
                     <dd className="display text-[clamp(2.4rem,4.4vw,3.4rem)] font-semibold leading-none text-paper transition-colors duration-500 group-hover:text-amber">
-                      <Readout n={it.n} suffix={it.suffix} hot={hot} />
+                      <Readout n={it.n} suffix={it.suffix} hot={hot} run={run} />
                     </dd>
                     <div className="h-14 w-14 shrink-0 sm:h-16 sm:w-16">{visuals[i](hot)}</div>
                   </div>
