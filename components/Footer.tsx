@@ -82,7 +82,7 @@ export default function Footer({ lang }: { lang: Lang }) {
           <div className="max-w-xl">
             <a href="#top" className="inline-flex items-center gap-3.5">
               <span className="relative">
-                <img src="img/logo.jpg" alt="" width={52} height={52} className="h-[52px] w-[52px] rounded-full object-cover" />
+                <img src="img/logo-96.webp" alt="" width={52} height={52} loading="lazy" className="h-[52px] w-[52px] rounded-full object-cover" />
                 <span className="absolute inset-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.6),inset_0_0_0_1px_rgba(255,255,255,0.25),0_0_30px_-6px_rgba(255,178,62,0.6)]" aria-hidden />
               </span>
               <span>
@@ -123,7 +123,7 @@ export default function Footer({ lang }: { lang: Lang }) {
                   </ul>
                 </div>
               ))}
-              <a href="#services" className="foot-link text-[15px] !text-paper">{tr(f.allSystems, lang)} ({services.length})</a>
+              <a href="#services" className="foot-link py-2 text-[15px] !text-paper">{tr(f.allSystems, lang)} ({services.length})</a>
             </div>
           </nav>
 

@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { services } from '../lib/data';
 import { copy, tr, type Lang } from '../lib/i18n';
+import { srcset } from '../lib/img';
 import FocusText from './FocusText';
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -63,7 +64,6 @@ export default function Systems({ lang }: { lang: Lang }) {
                         className={`chip relative shrink-0 !min-h-[42px] lg:!rounded-2xl lg:!bg-none lg:!shadow-none lg:px-4 lg:py-2.5 lg:text-start lg:text-[1.08rem] ${
                           on ? '' : 'lg:text-mist'
                         }`}
-                        aria-pressed={on}
                       >
                         {on && (
                           <motion.span
@@ -93,6 +93,8 @@ export default function Systems({ lang }: { lang: Lang }) {
                     <motion.img
                       key={s.slug}
                       src={`img/${s.slug}.jpg`}
+                      srcSet={srcset(s.slug)}
+                      sizes="(max-width: 1023px) 92vw, 760px"
                       alt={tr(s.title, lang)}
                       className="absolute inset-0 h-full w-full object-cover"
                       initial={reduce ? { opacity: 0 } : { clipPath: 'circle(0% at 50% 50%)', scale: 1.08 }}

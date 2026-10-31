@@ -1,13 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { motion, useReducedMotion, useScroll, useMotionValueEvent } from 'framer-motion';
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import { copy, tr, type Lang } from '../lib/i18n';
 
 const links = ['services', 'projects', 'process', 'contact'] as const;
 type Id = (typeof links)[number];
 
 export default function Nav({ lang, onLang }: { lang: Lang; onLang: () => void }) {
-  const reduce = useReducedMotion();
   const [hover, setHover] = useState<Id | null>(null);
   const [current, setCurrent] = useState<Id | null>(null);
   const [compact, setCompact] = useState(false);
@@ -29,20 +28,15 @@ export default function Nav({ lang, onLang }: { lang: Lang; onLang: () => void }
   const pill = hover ?? current;
 
   return (
-    <motion.header
-      initial={reduce ? false : { opacity: 0, y: -24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 1.9, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5"
-    >
+    <header className="intro-drop fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-5">
       <nav
         data-glass
         className={`glass glass-refract mx-auto flex items-center justify-between gap-3 rounded-full py-2 pe-2 ps-3 transition-[max-width] duration-700 ease-out sm:ps-4 ${compact ? 'max-w-5xl' : 'max-w-7xl'}`}
         aria-label="Main"
       >
-        <a href="#top" className="group flex items-center gap-2.5">
+        <a href="#top" className="group flex min-h-[44px] items-center gap-2.5">
           <span className="relative">
-            <img src="img/logo.jpg" alt="" width={36} height={36} className="h-9 w-9 rounded-full object-cover transition-transform duration-500 group-hover:rotate-[-8deg] group-hover:scale-110" />
+            <img src="img/logo-96.webp" alt="" width={36} height={36} className="h-9 w-9 shrink-0 rounded-full object-cover transition-transform duration-500 group-hover:rotate-[-8deg] group-hover:scale-110" />
             <span className="absolute inset-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.6),inset_0_0_0_1px_rgba(255,255,255,0.25)]" aria-hidden />
           </span>
           <span className="display text-xl font-semibold">STS</span>
@@ -74,15 +68,16 @@ export default function Nav({ lang, onLang }: { lang: Lang; onLang: () => void }
         </ul>
 
         <div className="flex items-center gap-2">
-          <button onClick={onLang} data-glass className="btn !min-h-[40px] !px-3.5 text-sm !font-medium" lang={lang === 'ar' ? 'en' : 'ar'} style={{ ['--glint-delay' as string]: '4.2s' }}>
-            {tr(copy.nav.lang, lang)}
+          <button onClick={onLang} data-glass className="btn !min-h-[44px] !min-w-[44px] !px-3 text-sm !font-medium sm:!px-3.5" lang={lang === 'ar' ? 'en' : 'ar'} aria-label={tr(copy.nav.lang, lang)} style={{ ['--glint-delay' as string]: '4.2s' }}>
+            <span className="sm:hidden">{lang === 'ar' ? 'EN' : 'ع'}</span>
+            <span className="hidden sm:inline">{tr(copy.nav.lang, lang)}</span>
           </button>
           <a href="#contact" className="rim-fire inline-flex rounded-full" data-magnet>
             <span className="rim" aria-hidden />
-            <span className="btn btn-amber !min-h-[40px] !px-4 text-sm" data-glass>{tr(copy.nav.quote, lang)}</span>
+            <span className="btn btn-amber !min-h-[44px] whitespace-nowrap !px-4 text-sm" data-glass>{tr(copy.nav.quote, lang)}</span>
           </a>
         </div>
       </nav>
-    </motion.header>
+    </header>
   );
 }

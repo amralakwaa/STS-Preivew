@@ -10,6 +10,8 @@ import { useEffect } from 'react';
 export default function Filters() {
   useEffect(() => {
     const chromium = /Chrome|Chromium|Edg\//.test(navigator.userAgent);
+    // the lens-like refraction is a desktop luxury; phones keep plain frosted glass
+    if (window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches) return;
     if (chromium && CSS.supports('backdrop-filter', 'url(#refract)')) {
       document.documentElement.classList.add('refract');
     }

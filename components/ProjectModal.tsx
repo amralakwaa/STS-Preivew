@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { projectDetails, projects } from '../lib/data';
 import { copy, tr, type Lang } from '../lib/i18n';
+import { srcset } from '../lib/img';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -77,6 +78,8 @@ export default function ProjectModal({ slug, lang, onClose, onSlug }: { slug: st
                 <motion.img
                   key={slug}
                   src={`img/${slug}.jpg`}
+                  srcSet={srcset(slug)}
+                  sizes="(max-width: 1024px) 100vw, 1000px"
                   alt={tr(p.name, lang)}
                   className="absolute inset-0 h-full w-full object-cover"
                   initial={reduce ? { opacity: 0 } : { opacity: 0, clipPath: 'circle(0% at 50% 50%)' }}

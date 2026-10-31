@@ -1,10 +1,11 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === 'production';
+// Static export. Set BASE_PATH when the site is served from a sub-folder,
+// e.g. BASE_PATH=/STS-Preivew for GitHub Pages; leave it empty on a root domain.
+const basePath = process.env.BASE_PATH || '';
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
-  // Relative asset paths so the static export works from any folder.
-  assetPrefix: isProd ? '.' : undefined,
+  basePath,
   images: { unoptimized: true },
 };
 export default nextConfig;

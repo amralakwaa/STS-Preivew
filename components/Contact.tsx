@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Copy, MessageCircle, Phone } from 'lucide-react';
 import { services } from '../lib/data';
 import { contact, copy, tr, type Lang } from '../lib/i18n';
+import { srcset } from '../lib/img';
 import FocusText from './FocusText';
 
 const main = services.slice(0, 8).map((s) => s.slug);
@@ -61,7 +62,7 @@ export default function Contact({ lang }: { lang: Lang }) {
   return (
     <section id="contact" className="relative scroll-mt-20 overflow-hidden px-5 py-20 sm:px-10 sm:py-28">
       <div className="absolute inset-0 overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,#000_20%,#000_80%,transparent)]">
-        <img src="img/ops-center.jpg" alt="" className="drift absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-luminosity" loading="lazy" />
+        <img src="img/ops-center.jpg" srcSet={srcset('ops-center')} sizes="100vw" alt="" decoding="async" className="drift absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-luminosity" loading="lazy" />
       </div>
 
       <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">

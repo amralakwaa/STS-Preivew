@@ -5,6 +5,7 @@ import { Expand } from 'lucide-react';
 import { projects } from '../lib/data';
 import ProjectModal from './ProjectModal';
 import { copy, tr, type Lang } from '../lib/i18n';
+import { srcset } from '../lib/img';
 import FocusText from './FocusText';
 
 /** Vertical scroll drives the strip of projects sideways. */
@@ -53,8 +54,8 @@ export default function Projects({ lang }: { lang: Lang }) {
   }
 
   return (
-    <section id="projects" ref={section} className="relative scroll-mt-0" style={{ height: `calc(100vh + ${shift}px)` }}>
-      <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
+    <section id="projects" ref={section} className="proj-section relative scroll-mt-0" style={{ height: `calc(100vh + ${shift}px)` }}>
+      <div className="proj-sticky sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
         <div className="mx-auto mb-8 flex w-full max-w-7xl items-end justify-between gap-6 px-5 pt-20 sm:px-10">
           <div>
             <FocusText text={tr(copy.projects.title, lang)} className="display text-[clamp(2.1rem,4.6vw,3.6rem)] font-semibold leading-[1.2]" />
@@ -67,7 +68,7 @@ export default function Projects({ lang }: { lang: Lang }) {
             </div>
           </div>
         </div>
-        <motion.div ref={track} style={{ x }} className="flex w-max gap-5 px-5 sm:gap-6 sm:px-10">
+        <motion.div ref={track} style={{ x }} className="proj-track no-scrollbar flex w-max gap-5 px-5 sm:gap-6 sm:px-10">
           {projects.map((p) => <Card key={p.slug} p={p} lang={lang} onOpen={() => setOpen(p.slug)} hidden={open === p.slug} />)}
         </motion.div>
       </div>
@@ -86,7 +87,7 @@ function Card({ p, lang, onOpen, hidden }: { p: (typeof projects)[number]; lang:
       className="group relative h-[min(62vh,560px)] w-[86vw] shrink-0 overflow-hidden rounded-[32px] text-start sm:w-[min(64vw,760px)]"
     >
       <motion.div layoutId={`proj-${p.slug}`} className="absolute inset-0 overflow-hidden rounded-[32px]" style={{ opacity: hidden ? 0 : 1 }}>
-        <img src={`img/${p.slug}.jpg`} alt="" className="drift absolute inset-0 h-full w-full object-cover" loading="lazy" />
+        <img src={`img/${p.slug}.jpg`} srcSet={srcset(p.slug)} sizes="(max-width: 767px) 86vw, 64vw" alt="" decoding="async" className="drift absolute inset-0 h-full w-full object-cover" loading="lazy" />
       </motion.div>
       <div className="pointer-events-none absolute inset-0 rounded-[32px] shadow-[inset_0_1px_0_rgba(255,255,255,0.35),inset_0_0_0_1px_rgba(255,255,255,0.12)]" aria-hidden />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent" aria-hidden />

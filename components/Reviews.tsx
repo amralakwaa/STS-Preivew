@@ -79,7 +79,19 @@ export default function Reviews({ lang }: { lang: Lang }) {
               <button className="btn !min-h-[44px] !w-11 !px-0" data-glass onClick={() => go(i - 1, -1)} aria-label={tr(copy.reviews.prev, lang)}><PrevIcon size={20} /></button>
               <button className="btn !min-h-[44px] !w-11 !px-0" data-glass onClick={() => go(i + 1, 1)} aria-label={tr(copy.reviews.next, lang)}><NextIcon size={20} /></button>
             </div>
-            <div role="tablist" aria-label={tr(copy.reviews.pick, lang)} className="flex flex-1 items-center gap-1.5">
+            {/* phones: one progress line for the current review */}
+            <div className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-white/12 sm:hidden" aria-hidden>
+              <motion.span
+                key={`m-${i}-${paused}`}
+                className="absolute inset-0 origin-[var(--o)] rounded-full bg-amber"
+                style={{ ['--o' as string]: rtl ? 'right' : 'left' }}
+                initial={{ scaleX: reduce || paused ? 1 : 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ duration: reduce || paused ? 0 : HOLD / 1000, ease: 'linear' }}
+              />
+            </div>
+            {/* larger screens: one tab per review */}
+            <div role="tablist" aria-label={tr(copy.reviews.pick, lang)} className="hidden flex-1 items-center gap-1.5 sm:flex">
               {reviews.map((rv, k) => (
                 <button
                   key={k}
@@ -87,7 +99,7 @@ export default function Reviews({ lang }: { lang: Lang }) {
                   aria-selected={k === i}
                   aria-label={rv.name}
                   onClick={() => go(k, k > i ? 1 : -1)}
-                  className="group relative h-8 flex-1"
+                  className="group relative h-11 min-w-[24px] flex-1"
                 >
                   <span className="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 overflow-hidden rounded-full bg-white/12 transition-colors group-hover:bg-white/25">
                     {k === i && (

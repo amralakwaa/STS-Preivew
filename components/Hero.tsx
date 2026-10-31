@@ -5,6 +5,7 @@ import {
 } from 'framer-motion';
 import { Scan } from 'lucide-react';
 import { contact, copy, tr, type Lang } from '../lib/i18n';
+import { srcset } from '../lib/img';
 
 type Mode = 'thermal' | 'night';
 const MAG = 1.22;
@@ -39,9 +40,13 @@ export default function Hero({ lang }: { lang: Lang }) {
   const sy = useSpring(fy, spring);
   const r = useMotionValue(0);
 
-  const left = useTransform(sx, (v) => `${v * 100}%`);
-  const top = useTransform(sy, (v) => `${v * 100}%`);
-  const ringSize = useTransform(r, (v) => v * 2);
+  // the ring moves by transform (not left/top) so its travel never counts as a layout shift
+  const fw = useMotionValue(0);
+  const fh = useMotionValue(0);
+  const ringX = useTransform([sx, fw], ([v, w]) => (v as number) * (w as number) - 150);
+  const ringY = useTransform([sy, fh], ([v, h]) => (v as number) * (h as number) - 150);
+  // the ring keeps a fixed box and scales, so opening the lens never shifts layout
+  const ringScale = useTransform(r, (v) => v / 150);
   const clip = useTransform([sx, sy, r], ([x, y, rr]) => `circle(${(rr as number) / MAG}px at ${(x as number) * 100}% ${(y as number) * 100}%)`);
   const origin = useTransform([sx, sy], ([x, y]) => `${(x as number) * 100}% ${(y as number) * 100}%`);
 
@@ -61,7 +66,11 @@ export default function Hero({ lang }: { lang: Lang }) {
   useEffect(() => {
     const el = frameRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(() => { size.current = { w: el.offsetWidth, h: el.offsetHeight }; });
+    const ro = new ResizeObserver(() => {
+      size.current = { w: el.offsetWidth, h: el.offsetHeight };
+      fw.set(el.offsetWidth);
+      fh.set(el.offsetHeight);
+    });
     ro.observe(el);
     const mq = window.matchMedia('(pointer: coarse)');
     setCoarse(mq.matches);
@@ -131,20 +140,23 @@ export default function Hero({ lang }: { lang: Lang }) {
       <motion.div className={`absolute inset-0 ${reduce ? '' : 'breathe'}`} style={{ x: px, y: py, WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent)', maskImage: 'linear-gradient(to bottom, #000 72%, transparent)' }}>
       <div ref={frameRef} className="hero-frame">
         {/* the city, pulling into focus on load */}
-        <motion.img
+        <img
           src="img/hero-city.jpg"
+          srcSet={srcset('hero-city')}
+          sizes="(max-width: 767px) 260vw, 100vw"
           alt=""
-          className="absolute inset-0 h-full w-full select-none"
+          className="intro-focus absolute inset-0 h-full w-full select-none"
+          style={{ filter: 'brightness(0.7)', opacity: 0.86 }}
           draggable={false}
-          initial={reduce ? false : { filter: 'blur(18px) brightness(0.3)', scale: 1.08 }}
-          animate={{ filter: 'blur(0px) brightness(0.7)', scale: 1, opacity: 0.86 }}
-          transition={{ duration: 1.6, ease }}
+          fetchPriority="high"
         />
 
         {/* what the system sees: recolored, magnified, clipped to the lens */}
         <motion.div className="absolute inset-0" style={{ clipPath: clip, transformOrigin: origin, scale: MAG }} aria-hidden>
           <img
             src="img/hero-city.jpg"
+            srcSet={srcset('hero-city')}
+            sizes="(max-width: 767px) 260vw, 100vw"
             alt=""
             className="absolute inset-0 h-full w-full"
             style={{ filter: `url(#${mode})` }}
@@ -174,7 +186,7 @@ export default function Hero({ lang }: { lang: Lang }) {
         {/* the glass itself */}
         <motion.div
           className="lens-ring"
-          style={{ left, top, width: ringSize, height: ringSize, ['--lens-glow' as string]: glow }}
+          style={{ left: 0, top: 0, x: ringX, y: ringY, width: 300, height: 300, scale: ringScale, ['--lens-glow' as string]: glow }}
           aria-hidden
         >
           <span className="lens-tick" style={{ top: 10, left: '50%', width: 2, height: 10, marginLeft: -1 }} />
@@ -194,25 +206,13 @@ export default function Hero({ lang }: { lang: Lang }) {
           }`}
         >
           {words.map((w, i) => (
-            <motion.span
-              key={`${lang}-${i}`}
-              className="sheen-word inline-block"
-              style={{ ['--i' as string]: i }}
-              initial={reduce ? false : { opacity: 0, filter: 'blur(14px)', y: 24 }}
-              animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-              transition={{ duration: 0.9, delay: 1.2 + i * 0.09, ease }}
-            >
+            <span key={`${lang}-${i}`} className="intro-word sheen-word inline-block" style={{ ['--i' as string]: i }}>
               {w}{i < words.length - 1 ? ' ' : ''}
-            </motion.span>
+            </span>
           ))}
         </h1>
 
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.7, ease }}
-          className="mt-6 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
-        >
+        <div className="intro-rise mt-6 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="max-w-[46ch] text-lg text-mist sm:text-xl">{tr(copy.hero.sub, lang)}</p>
             <div className="pointer-events-auto mt-7 flex flex-wrap gap-3">
@@ -248,7 +248,7 @@ export default function Hero({ lang }: { lang: Lang }) {
               ))}
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

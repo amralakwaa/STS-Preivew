@@ -156,7 +156,7 @@ function Tile({ children, label, onGo, className = '' }: { children: (hot: boole
       aria-label={label}
       data-glass
       style={{ rotateX: rx, rotateY: ry, transformPerspective: 900 }}
-      className={`trust-tile group relative overflow-hidden rounded-[24px] p-6 text-start sm:p-7 ${className}`}
+      className={`trust-tile group relative h-full w-full overflow-hidden rounded-[20px] p-4 text-start sm:rounded-[24px] sm:p-7 ${className}`}
     >
       {children(hot)}
     </motion.button>
@@ -296,31 +296,31 @@ export default function Trust({ lang }: { lang: Lang }) {
           <span className="ms-auto hidden md:inline">{tr(t.citiesL, lang)} {tr(t.cities, lang)}</span>
         </div>
 
-        <motion.dl
-          className="relative grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 lg:grid-cols-4"
+        <motion.ul
+          className="relative grid grid-cols-2 gap-2 p-2 sm:gap-3 sm:p-3 lg:grid-cols-4"
           initial="hidden"
           whileInView="shown"
           viewport={{ once: true, margin: '-10% 0px' }}
         >
           {t.items.map((it, i) => (
-            <Tile key={i} label={`${it.n}${it.suffix} ${tr(it.t, lang)}`} onGo={actions[i]}>
+            <li key={i} className="grid"><Tile label={`${it.n}${it.suffix} ${tr(it.t, lang)}`} onGo={actions[i]}>
               {(hot) => (
                 <>
-                  <div className="flex items-start justify-between gap-4">
-                    <dd className="display text-[clamp(2.4rem,4.4vw,3.4rem)] font-semibold leading-none text-paper transition-colors duration-500 group-hover:text-amber">
+                  <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:justify-between sm:gap-4">
+                    <p className="display text-[clamp(2rem,4.4vw,3.4rem)] font-semibold leading-none text-paper transition-colors duration-500 group-hover:text-amber">
                       <Readout n={it.n} suffix={it.suffix} hot={hot} run={run} />
-                    </dd>
-                    <div className="h-14 w-14 shrink-0 sm:h-16 sm:w-16">{visuals[i](hot)}</div>
+                    </p>
+                    <div className="h-10 w-10 shrink-0 sm:h-16 sm:w-16">{visuals[i](hot)}</div>
                   </div>
-                  <dt className="mt-4 max-w-[24ch] text-[15px] leading-snug text-mist transition-colors duration-500 group-hover:text-paper">{tr(it.t, lang)}</dt>
-                  <span className="mt-4 flex items-center gap-1.5 text-sm text-amber opacity-0 transition-all duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 rtl:translate-x-2 ltr:-translate-x-2 group-hover:translate-x-0" aria-hidden>
+                  <p className="mt-3 max-w-[24ch] text-sm leading-snug sm:mt-4 sm:text-[15px] text-mist transition-colors duration-500 group-hover:text-paper">{tr(it.t, lang)}</p>
+                  <span className="mt-4 hidden items-center gap-1.5 text-sm text-amber opacity-0 sm:flex transition-all duration-500 group-hover:opacity-100 group-focus-visible:opacity-100 rtl:translate-x-2 ltr:-translate-x-2 group-hover:translate-x-0" aria-hidden>
                     {tr(t.go[i], lang)}
                   </span>
                 </>
               )}
-            </Tile>
+            </Tile></li>
           ))}
-        </motion.dl>
+        </motion.ul>
 
         <div className="relative overflow-hidden border-t border-white/10 py-4 [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
           <div className={`flex w-max gap-2.5 ${reduce ? '' : 'marquee'}`}>

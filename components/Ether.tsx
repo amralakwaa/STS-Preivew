@@ -79,10 +79,21 @@ export default function Ether() {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    let cleanup = () => {};
+    // wait until the page has shown itself; the backdrop is never what the visitor came for
+    const start = () => { cleanup = boot() ?? (() => {}); };
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const t = window.setTimeout(() => (w.requestIdleCallback ? w.requestIdleCallback(start, { timeout: 2500 }) : start()), 900);
+    return () => { window.clearTimeout(t); cleanup(); };
+  }, []);
+
+  const boot = () => {
     const canvas = ref.current;
     if (!canvas) return;
     const gl = canvas.getContext('webgl', { antialias: false, alpha: false, powerPreference: 'low-power' });
     if (!gl) return;
+    // phones and tablets get one still frame of the smoke: same look, no running GPU work
+    const lite = window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches;
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!;
@@ -109,7 +120,7 @@ export default function Ether() {
     const uMouse = gl.getUniformLocation(prog, 'uMouse');
     const uScroll = gl.getUniformLocation(prog, 'uScroll');
 
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduce = lite || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const scale = Math.min(window.devicePixelRatio || 1, 2) * (window.innerWidth < 768 ? 0.4 : 0.5);
     let w = 0, h = 0;
     const resize = () => {
@@ -149,15 +160,20 @@ export default function Ether() {
       if (!document.hidden && !reduce) raf = requestAnimationFrame(draw);
     };
     document.addEventListener('visibilitychange', onVis);
-    if (reduce) window.addEventListener('scroll', () => requestAnimationFrame(draw), { passive: true });
+    const redraw = () => requestAnimationFrame(draw);
+    if (reduce && !lite) window.addEventListener('scroll', redraw, { passive: true });
+    if (lite) window.addEventListener('resize', redraw);
+    canvas.style.opacity = '1';
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', redraw);
+      window.removeEventListener('scroll', redraw);
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, []);
+  };
 
-  return <canvas ref={ref} aria-hidden className="pointer-events-none fixed inset-0 z-0 h-full w-full" style={{ background: '#0C1626' }} />;
+  return <canvas ref={ref} aria-hidden className="pointer-events-none fixed inset-0 z-0 h-full w-full transition-opacity duration-1000" style={{ background: '#0C1626', opacity: 0 }} />;
 }

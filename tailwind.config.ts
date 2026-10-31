@@ -8,8 +8,8 @@ const config: Config = {
         amber: '#FFB23E', mint: '#4FE3B5', rose: '#E2456F',
       },
       fontFamily: {
-        display: ['"Reem Kufi"', '"IBM Plex Sans Arabic"', 'sans-serif'],
-        sans: ['"IBM Plex Sans Arabic"', 'system-ui', 'sans-serif'],
+        display: ['var(--f-kufi-ar)', 'var(--f-kufi-la)', 'var(--f-plex-ar)', 'sans-serif'],
+        sans: ['var(--f-plex-ar)', 'var(--f-plex-la)', 'system-ui', 'sans-serif'],
       },
     },
   },

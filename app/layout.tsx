@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { kufiAr, kufiLa, plexAr, plexLa } from './fonts';
 
 export const metadata: Metadata = {
   title: 'STS — أنظمة أمنية وتقنيات ذكية',
@@ -9,12 +10,8 @@ export const viewport: Viewport = { themeColor: '#0C1626' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@500;600;700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="ar" dir="rtl" suppressHydrationWarning className={`${plexAr.variable} ${plexLa.variable} ${kufiAr.variable} ${kufiLa.variable}`}>
+
       <body>{children}</body>
     </html>
   );

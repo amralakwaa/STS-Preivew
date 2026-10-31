@@ -23,17 +23,17 @@
 html { background: var(--ink); color: var(--paper); -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  font-family: var(--f-plex-ar), var(--f-plex-la), system-ui, sans-serif;
   font-size: 17px;
   line-height: 1.75;
   overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
-[dir='ltr'] body { line-height: 1.6; }
+[dir='ltr'] body { line-height: 1.6; font-family: var(--f-plex-la), var(--f-plex-ar), system-ui, sans-serif; }
 ::selection { background: rgba(255, 178, 62, 0.35); color: #fff; }
 :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; border-radius: 6px; }
 
-.display { font-family: 'Reem Kufi', 'IBM Plex Sans Arabic', sans-serif; letter-spacing: 0; }
+.display { font-family: var(--f-kufi-ar), var(--f-kufi-la), var(--f-plex-ar), sans-serif; letter-spacing: 0; }
 [dir='ltr'] .display { letter-spacing: -0.01em; }
 
 /* ---------- Glass: a pane of optical glass, not a frosted card ---------- */
@@ -96,7 +96,6 @@ html.refract .glass.glass-refract {
 .lens-ring {
   position: absolute;
   border-radius: 50%;
-  transform: translate(-50%, -50%);
   pointer-events: none;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.6),
@@ -407,7 +406,7 @@ html.refract .lens-ring::before {
   .foot-col { padding-inline: 2rem; }
   .foot-col + .foot-col { border-inline-start: 1px solid transparent; border-image: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.14) 20%, rgba(255, 255, 255, 0.14) 80%, transparent) 1; }
 }
-.foot-h { font-family: 'Reem Kufi', 'IBM Plex Sans Arabic', sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--paper); }
+.foot-h { font-family: var(--f-kufi-ar), var(--f-kufi-la), var(--f-plex-ar), sans-serif; font-size: 1.15rem; font-weight: 600; color: var(--paper); }
 .foot-link {
   position: relative;
   display: inline-flex;
@@ -428,6 +427,8 @@ html.refract .lens-ring::before {
 .foot-link:hover, .foot-link:focus-visible { color: var(--paper); }
 .foot-link:hover::before, .foot-link:focus-visible::before { width: 14px; }
 .foot-contact { display: flex; align-items: flex-start; gap: 0.75rem; line-height: 1.5; }
+a.foot-contact { min-height: 44px; align-items: center; }
+a.foot-contact .foot-ico { margin-top: 0; }
 .foot-ico {
   display: grid;
   place-items: center;
@@ -449,7 +450,7 @@ a.foot-contact:hover .foot-ico { scale: 1.08; box-shadow: inset 0 1px 0 rgba(255
 
 /* the STS signature */
 .wordmark {
-  font-family: 'Reem Kufi', sans-serif;
+  font-family: var(--f-kufi-la), var(--f-kufi-ar), sans-serif;
   font-weight: 700;
   font-size: clamp(7rem, 24vw, 19rem);
   line-height: 0.8;
@@ -622,4 +623,55 @@ a.foot-contact:hover .foot-ico { scale: 1.08; box-shadow: inset 0 1px 0 rgba(255
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation: none !important; }
   .sheen-word { -webkit-text-fill-color: var(--paper); }
+}
+
+/* ================================================================
+   Entrance: plain CSS, so the hero shows before any script runs
+   ================================================================ */
+.intro-focus { animation: intro-focus 1.1s var(--ease-out) both; }
+@keyframes intro-focus { from { filter: blur(14px) brightness(0.35); transform: scale(1.06); } to { filter: brightness(0.7); transform: none; } }
+.intro-word.sheen-word {
+  animation: intro-word 0.8s var(--ease-out) both, word-sheen 7s var(--ease-out) infinite;
+  animation-delay: calc(var(--i, 0) * 0.08s), calc(3s + var(--i, 0) * 0.14s);
+}
+/* starts visible and out of focus (never transparent), so the headline counts as painted from the first frame */
+@keyframes intro-word { from { transform: translateY(0.3em) scale(1.04); filter: blur(12px); } to { transform: none; filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.45)); } }
+.intro-rise { animation: intro-rise 0.7s var(--ease-out) 0.55s both; }
+@keyframes intro-rise { from { opacity: 0.01; transform: translateY(14px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+.intro-drop { animation: intro-drop 0.7s var(--ease-out) 0.7s both; }
+@keyframes intro-drop { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+
+/* ================================================================
+   Phones and tablets: same look, far less work for the GPU.
+   Continuous effects stop, blur gets lighter, no SVG refraction.
+   ================================================================ */
+@media (max-width: 1023px), (pointer: coarse) {
+  .glass { -webkit-backdrop-filter: blur(12px) saturate(1.4); backdrop-filter: blur(12px) saturate(1.4); }
+  .btn { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+  .btn::before { animation: none; }
+  .rim-slow > .rim, .rim-fire > .rim { animation: none; --spin: 140deg; }
+  .drift, .breathe, .scan-sweep { animation: none; }
+  .drift { transform: scale(1.04); }
+  .intro-word.sheen-word { animation: intro-word 0.6s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 0.06s); }
+  .intro-rise { animation-delay: 0.3s; }
+  .intro-drop { animation-delay: 0.35s; }
+  .wordmark-thermal { animation: none; }
+}
+
+/* Projects on phones: a native swipe carousel instead of scroll-driven travel */
+@media (max-width: 767px) {
+  .proj-section { height: auto !important; padding-block: 4.5rem 2rem; }
+  .proj-sticky { position: static; height: auto; overflow: visible; }
+  .proj-sticky > div:first-child { padding-top: 0; }
+  .proj-track {
+    transform: none !important;
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.5rem;
+  }
+  .proj-track > * { scroll-snap-align: start; height: min(70vh, 520px); }
 }
